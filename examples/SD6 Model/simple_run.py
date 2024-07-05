@@ -1,3 +1,8 @@
+'''
+terminal:
+python.exe -m pip install --upgrade pip
+pip install git+https://github.com/MalenaOA/PyCHAMP.git
+'''
 import os
 
 # wd = r"C:\Users\CL\OneDrive\VT\Proj_DIESE\Code"
@@ -74,6 +79,10 @@ df_farmers, df_fields, df_wells, df_aquifers = SD6Model.get_dfs(m)
 df_sys = SD6Model.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
 
 df_sys["GW_st"].plot()
+plt.show()
 df_sys["withdrawal"].plot()
+plt.show()
 df_sys[["corn", "sorghum", "soybeans", "wheat", "fallow"]].plot()
+plt.show()
 df_sys[["Imitation", "Social comparison", "Repetition", "Deliberation"]].plot()
+plt.show()
