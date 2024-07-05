@@ -121,7 +121,8 @@ class Well(mesa.Agent):
         dwl: float,
         pumping_rate: float,
         l_pr: float,
-        pumping_days: int | None = None,
+        # pumping_days: int | None = None,
+        pumping_days = None,
     ) -> float:
         """
         Perform a single step of well simulation, calculating the energy consumption.
@@ -261,7 +262,11 @@ class Well4SingleFieldAndWell(mesa.Agent):
         self.init = settings["init"]
 
     def step(
-            self, withdrawal: float, dwl: float, pumping_days: int | None = None
+            self,
+            withdrawal: float,
+            dwl: float,
+            # pumping_days: int | None = None
+            pumping_days = None
             ) -> float:
         """
         Perform a single step of well simulation, calculating the energy consumption.
