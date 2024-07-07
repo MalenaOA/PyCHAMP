@@ -30,8 +30,6 @@ chdir(wd)
 
 file_path =  wd + "\Inputs_SD6.pkl"
 
-
-
 with open(file_path, "rb") as f:
     (aquifers_dict, fields_dict, wells_dict, finances_dict, behaviors_dict,
      prec_aw_step, crop_price_step, shared_config) = dill.load(f)
@@ -98,19 +96,17 @@ from plot_EMS import (plot_cali_gwrc, plot_crop_ratio, reg_prec_withdrawal)
 # Plot results
 plot_cali_gwrc(df_sys.reindex(data.index), data, metrices, prec_avg, stochastic=[], savefig=None)
 
-
 plot_crop_ratio(df_sys.reindex(data.index), data, metrices, prec_avg, savefig=None)
-
 
 reg_prec_withdrawal(prec_avg, df_sys.reindex(data.index), df_sys_nolema=None, data=data,
                     df_sys_list=None, df_sys_nolema_list=None, dot_labels=True, obv_dots=False, savefig=None)
 
 
-# Plot results
-plot_cali_gwrc(df_sys.reindex(data.index), data, metrices, prec_avg, stochastic=[], savefig=None)
-plot_crop_ratio(df_sys.reindex(data.index), data, metrices, prec_avg, savefig=None)
-reg_prec_withdrawal(prec_avg, df_sys.reindex(data.index), df_sys_nolema=None, data=data,
-                    df_sys_list=None, df_sys_nolema_list=None, savefig=None)
+# # Plot results
+# plot_cali_gwrc(df_sys.reindex(data.index), data, metrices, prec_avg, stochastic=[], savefig=None)
+# plot_crop_ratio(df_sys.reindex(data.index), data, metrices, prec_avg, savefig=None)
+# reg_prec_withdrawal(prec_avg, df_sys.reindex(data.index), df_sys_nolema=None, data=data,
+#                     df_sys_list=None, df_sys_nolema_list=None, savefig=None)
 
 
 
