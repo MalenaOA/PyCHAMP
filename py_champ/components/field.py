@@ -659,6 +659,7 @@ class Field_1f1w_ci(mesa.Agent):
 
 class Field_aquacrop(mesa.Agent):
     """
+    = TO DO: change description = 
     This module is a field simulator. 
 
     Parameters
@@ -782,7 +783,7 @@ class Field_aquacrop(mesa.Agent):
         """
         crop_options = self.model.crop_options
         self.field_area = settings["field_area"]
-        self.water_yield_curves = settings["water_yield_curves"]
+        self.water_yield_curves = settings["water_yield_curves"] # delete? 
         self.tech_pumping_rate_coefs = settings["tech_pumping_rate_coefs"]
         self.prec_aw_id = settings["prec_aw_id"]
         self.init = settings["init"]
@@ -790,7 +791,7 @@ class Field_aquacrop(mesa.Agent):
         self.n_s = self.model.area_split
         self.n_c = len(crop_options)
         
-        crop_par = np.array([self.water_yield_curves[c] for c in crop_options])
+        crop_par = np.array([self.water_yield_curves[c] for c in crop_options]) # delete? 
         self.ymax = crop_par[:, 0].reshape((-1, 1))     # (n_c, 1)
         self.wmax = crop_par[:, 1].reshape((-1, 1))     # (n_c, 1)
         self.a = crop_par[:, 2].reshape((-1, 1))        # (n_c, 1)
@@ -853,7 +854,7 @@ class Field_aquacrop(mesa.Agent):
 
     def write_to_csv(self, filename="default.csv"):
         """
-        Write collected data to a CSV file.
+        Write collected data to a provided CSV file with calibrated Aquacrop values.
 
         Parameters
         ----------
@@ -868,7 +869,7 @@ class Field_aquacrop(mesa.Agent):
                 writer.writerow(data_row)
 
 
-    def calculate_yield(self, irr_depth, i_crop, i_te, prec_aw: dict) -> tuple:
+    def calculate_yield(self, irr_depth, i_crop, i_te, prec_aw: dict) -> tuple: # change to run aquacrop? 
         """
         Perform a single step of field operation, calculating yields and
         irrigation volumes.
