@@ -11,7 +11,6 @@ from ..components.behavior import Behavior_1f1w_ci
 from ..components.field import Field_1f1w_ci
 from ..components.finance import Finance_1f1w_ci
 from ..components.optimization_1f1w_ci import Optimization_1f1w_ci
-# from ..components.well import Well_1f1w
 from ..components.well import Well4SingleFieldAndWell
 from ..utility.util import (
     BaseSchedulerByTypeFiltered,
@@ -136,7 +135,6 @@ class SD6Model_1f1w_ci(mesa.Model):
             components = {
                 "aquifer": Aquifer,
                 "field": Field_1f1w_ci,
-                # "well": Well_1f1w,
                 "well": Well4SingleFieldAndWell,
                 "finance": Finance_1f1w_ci,
                 "behavior": Behavior_1f1w_ci,
@@ -322,13 +320,14 @@ class SD6Model_1f1w_ci(mesa.Model):
             "yield_rate": get_agt_attr("yield_rate_per_field"),
             "yield": get_agt_attr("y"),  # 1e4 bu/field
             "w": get_agt_attr("w"),
-            "field_area": get_agt_attr("total_field_area"),  # ha
+            "field_area": get_agt_attr("field_area"),  # ha
             "aph_yield_dict": get_agt_attr("aph_yield_dict"),  # a dictionary
             ### Behavior
             "Sa": get_agt_attr("satisfaction"),
             "E[Sa]": get_agt_attr("expected_sa"),
             "Un": get_agt_attr("uncertainty"),
             "state": get_agt_attr("state"),
+            "total_field_area": get_agt_attr("total_field_area"),  # ha
             "gp_status": get_agt_attr("gp_status"),
             "gp_MIPGap": get_agt_attr("gp_MIPGap"),
             ### Finance
@@ -492,7 +491,7 @@ class SD6Model_1f1w_ci(mesa.Model):
         df_behaviors["bid"] = df_behaviors["AgentID"]
 
         df_fields = df[df["agt_type"] == "Field"].dropna(axis=1, how="all")
-        df_fields["field_type"] = np.nan
+        df_fields["field_type"] = ""
         df_fields.loc[df_fields["irr_vol"] == 0, "field_type"] = "rainfed"
         df_fields.loc[df_fields["irr_vol"] > 0, "field_type"] = "irrigated"
         df_fields["irr_depth"] = (
@@ -682,7 +681,7 @@ class SD6Model_1f1w_ci(mesa.Model):
                 "fallow",
             ]
         if indicators_list is None:
-            indicators_list = ["r", "rmse", "KGE"]
+            indicators_list = ["r", "rmse", "kge"]
         indicators = Indicator()
         metrices = []
         for tar in targets:

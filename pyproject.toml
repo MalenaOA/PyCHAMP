@@ -7,18 +7,17 @@ version = "1.0.0"
 authors = [
     {name = "Chung-Yi Lin", email = "philip928lin@gmail.com"}
 ]
-license = {text = "GNU General Public License v3 (GPLv3)"}
+#license = "file: LICENSE"
 description = "file: README.md"
 dependencies = [
-  "mesa==2.1.1",
-  "numba==0.56.0",
   "dill",
   "numpy",
   "pandas",
   "gurobipy",
   "scipy",
   "joblib",
-  "pyswarms"
+  "pyswarms",
+  "mesa==2.1.1"
 ]
 
 [project.optional-dependencies]
