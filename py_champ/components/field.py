@@ -660,7 +660,7 @@ class Field_1f1w_ci(mesa.Agent):
 
 
 
-class Field4SingleFieldAndWell(mesa.Agent):
+class Field_aquacrop(mesa.Agent):
     """ Simulate a field agent in the model. """
     def __init__(self, unique_id, model, settings: dict, **kwargs):
         """Initialize a Field agent.
