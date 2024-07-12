@@ -10,14 +10,15 @@ authors = [
 #license = "file: LICENSE"
 description = "file: README.md"
 dependencies = [
+  "mesa==2.1.1",
+  "numba==0.56.0",
   "dill",
   "numpy",
   "pandas",
   "gurobipy",
   "scipy",
   "joblib",
-  "pyswarms",
-  "mesa==2.1.1"
+  "pyswarms"
 ]
 
 [project.optional-dependencies]

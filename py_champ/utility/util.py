@@ -17,7 +17,8 @@ class BaseSchedulerByTypeFiltered(BaseScheduler):
     >>> scheduler.step(agt_type="Behavior")
     """
 
-    def step(self, agt_type=None) -> None:
+    # def step(self, agt_type=None) -> None:
+    def step(self, agt_type=None):
         """Execute the step of all the agents, one at a time."""
         # To be able to remove and/or add agents during stepping
         # it's necessary for the keys view to be a list.
@@ -234,7 +235,8 @@ class Indicator:
         y_sim = np.array(y_sim)
         index = [
             True if not np.isnan(x) and not np.isnan(y) else False
-            for x, y in zip(x_obv, y_sim, strict=True)
+            # for x, y in zip(x_obv, y_sim, strict=True)
+            for x, y in zip(x_obv, y_sim)
         ]
         x_obv = x_obv[index]
         y_sim = y_sim[index]
