@@ -6,9 +6,10 @@ pip install git+https://github.com/MalenaOA/PyCHAMP.git
 import os
 
 # wd = r"C:\Users\CL\OneDrive\VT\Proj_DIESE\Code"
-# Malena PC -> wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP"
+# Malena PC ->
+wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP"
 # Malena Laptop ->
-wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
+# wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
 import sys
 
 sys.setrecursionlimit(10000)
@@ -21,9 +22,10 @@ from py_champ.models.sd6_model import SD6Model
 # Run simulation
 # =============================================================================
 # Load data
-# Malena PC -> wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\SD6 Model"
+# Malena PC ->
+wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\SD6 Model"
 # Malena Laptop ->
-wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
+# wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
 with open(os.path.join(wd, "Inputs_SD6.pkl"), "rb") as f:
     (
         aquifers_dict,
@@ -87,6 +89,7 @@ df_sys = SD6Model.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
 # df_sys[["corn", "sorghum", "soybeans", "wheat", "fallow"]].plot()
 # df_sys[["Imitation", "Social comparison", "Repetition", "Deliberation"]].plot()
 
+import pandas as pd
 data = pd.read_csv(os.path.join(wd, "Data_SD6.csv"), index_col=["year"])
 
 prec_avg = pd.read_csv(os.path.join(wd, "Prec_avg.csv"), index_col=[0]).iloc[1:, :]
