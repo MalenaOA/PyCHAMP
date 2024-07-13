@@ -778,7 +778,7 @@ class Field_aquacrop(mesa.Agent):
         # Define the path to the CSV file
         working_directory = "/path/to/working/directory"
         folder_name = "examples"
-        file_name = "existing_data.csv"
+        file_name = "default.csv"
         file_path = os.path.join(working_directory, folder_name, file_name)
 
         print(f"CSV file path: {file_path}")  # Debugging: Print file path
