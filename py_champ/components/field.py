@@ -779,7 +779,9 @@ class Field_aquacrop(mesa.Agent):
         # Malena Laptop ->
         working_directory = "C:\\Users\m154o020\\CHAMP\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\"
         # Malena PC ->
-        # working_directory = "C:\\Users\m154o020\\CHAMP\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\"
+        # working_directory = "??"
+        # Michelle Laptop ->
+        # working_directory = "??"
         folder_name = "examples\\SD6 Model\\"
         file_name = "default.csv"
         file_path = os.path.join(working_directory, folder_name, file_name)
