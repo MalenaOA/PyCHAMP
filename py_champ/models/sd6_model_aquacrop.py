@@ -22,9 +22,8 @@ from ..utility.util import (
 
 
 # % MESA
-class SD6Model4SingleFieldAndWell(mesa.Model):
-    """ The SD6Model_1f1w class is a simplified SD6Model that targets a single field
-    and well owned by a farmer agent."""
+class SD6ModelAquacrop(mesa.Model):
+    """ Based on the SD6Model_1f1w class but using aquacrop to calculate yield."""
 
     def __init__(
         self,
@@ -57,7 +56,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         if components is None:
             components = {
                 "aquifer": Aquifer,
-                "field": Field4SingleFieldAndWell,
+                "field": Field_aquacrop,
                 "well": Well4SingleFieldAndWell,
                 "finance": Finance4SingleFieldAndWell,
                 "behavior": Behavior4SingleFieldAndWell,

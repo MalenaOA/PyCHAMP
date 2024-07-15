@@ -776,8 +776,11 @@ class Field_aquacrop(mesa.Agent):
         irrig_method = [self.field_type]  # assuming this is for irrigation method
 
         # Define the path to the CSV file
-        working_directory = "/path/to/working/directory"
-        folder_name = "examples"
+        # Malena Laptop ->
+        working_directory = "C:\\Users\m154o020\\CHAMP\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\"
+        # Malena PC ->
+        # working_directory = "C:\\Users\m154o020\\CHAMP\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\"
+        folder_name = "examples\\SD6 Model\\"
         file_name = "default.csv"
         file_path = os.path.join(working_directory, folder_name, file_name)
 
