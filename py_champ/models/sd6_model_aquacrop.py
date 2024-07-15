@@ -57,7 +57,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         if components is None:
             components = {
                 "aquifer": Aquifer,
-                "field": Field4SingleFieldAndWell,
+                "field": Field_aquacrop,
                 "well": Well4SingleFieldAndWell,
                 "finance": Finance4SingleFieldAndWell,
                 "behavior": Behavior4SingleFieldAndWell,

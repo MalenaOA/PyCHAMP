@@ -16,7 +16,7 @@ import sys
 sys.setrecursionlimit(10000)
 import dill
 
-from py_champ.models.sd6_model import SD6Model
+from py_champ.models.sd6_model_aquacrop import SD6Model4SingleFieldAndWell
 
 # %%
 # =============================================================================
@@ -25,9 +25,9 @@ from py_champ.models.sd6_model import SD6Model
 # Load data
 # Malena PC ->
 #wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\SD6 Model"
+wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/SD6 Model"
 # Malena Laptop ->
 # wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
-wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/SD6 Model"
 with open(os.path.join(wd, "Inputs_SD6.pkl"), "rb") as f:
     (
         aquifers_dict,
@@ -52,7 +52,7 @@ pars = {
     "un_thre": 0.0773514357873846,
 }
 
-m = SD6Model(
+m = SD6Model4SingleFieldAndWell(
     pars=pars,
     crop_options=crop_options,
     tech_options=tech_options,
@@ -83,8 +83,8 @@ m.end()
 # =============================================================================
 # Analyze results
 # =============================================================================
-df_farmers, df_fields, df_wells, df_aquifers = SD6Model.get_dfs(m)
-df_sys = SD6Model.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
+df_farmers, df_fields, df_wells, df_aquifers = SD6Model4SingleFieldAndWell.get_dfs(m)
+df_sys = SD6Model4SingleFieldAndWell.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
 
 # df_sys["GW_st"].plot()
 # df_sys["withdrawal"].plot()
