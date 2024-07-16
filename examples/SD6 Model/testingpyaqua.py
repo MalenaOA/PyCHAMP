@@ -16,7 +16,7 @@ import sys
 sys.setrecursionlimit(10000)
 import dill
 
-from py_champ.models.sd6_model_aquacrop import SD6Model4SingleFieldAndWell
+from py_champ.models.sd6_model_aquacrop import SD6Model4FieldAquacrop
 
 # %%
 # =============================================================================
@@ -52,7 +52,7 @@ pars = {
     "un_thre": 0.0773514357873846,
 }
 
-m = SD6Model4SingleFieldAndWell(
+m = SD6Model4FieldAquacrop(
     pars=pars,
     crop_options=crop_options,
     tech_options=tech_options,
@@ -83,8 +83,8 @@ m.end()
 # =============================================================================
 # Analyze results
 # =============================================================================
-df_farmers, df_fields, df_wells, df_aquifers = SD6Model4SingleFieldAndWell.get_dfs(m)
-df_sys = SD6Model4SingleFieldAndWell.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
+df_farmers, df_fields, df_wells, df_aquifers = SD6Model4FieldAquacrop.get_dfs(m)
+df_sys = SD6Model4FieldAquacrop.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
 
 # df_sys["GW_st"].plot()
 # df_sys["withdrawal"].plot()

@@ -22,7 +22,7 @@ from ..utility.util import (
 
 
 # % MESA
-class SD6Model4SingleFieldAndWell(mesa.Model):
+class SD6Model4FieldAquacrop(mesa.Model):
     """ The SD6Model_1f1w class is a simplified SD6Model that targets a single field
     and well owned by a farmer agent."""
 
@@ -124,11 +124,11 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         fields = {}
         for fid, field_dict in fields_dict.items():
             # Initialize crop type
-            if isinstance(field_dict["init"]["crop"], list):
-                raise NotImplementedError(
-                    "Multiple crop types per field is not supported. "
-                    +"Initial crop type must be a single string."
-                    )
+            #if isinstance(field_dict["init"]["crop"], list):
+                #raise NotImplementedError(
+                    #"Multiple crop types per field is not supported. "
+                    #+"Initial crop type must be a single string."
+                    #)
 
             # Initialize fields
             agt_field = self.components["field"](
