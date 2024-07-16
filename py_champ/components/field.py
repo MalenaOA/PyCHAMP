@@ -3,8 +3,8 @@
 # Last modified on Dec 30, 2023
 import mesa
 import numpy as np
-import os
 import pandas as pd
+import os
 
 class Field(mesa.Agent):
     """
@@ -481,15 +481,18 @@ class Field_1f1w_ci(mesa.Agent):
         # Initialize field type
         self.field_type = self.init["field_type"]
 
+        # Numerber of years for the aph yield calculation
+        self.n_aph_years = 10
+
         # Initialize aph_yield_records & aph_yield_dict (in unit of 1e4 bu/field)
         if self.model.activate_ci:
             self.aph_yield_dict = self.init.get("aph_yield")
             self.aph_yield_records = {
                 "irrigated": {
-                    c: [v] * 5 for c, v in self.aph_yield_dict["irrigated"].items()
+                    c: [v] * self.n_aph_years for c, v in self.aph_yield_dict["irrigated"].items()
                 },
                 "rainfed": {
-                    c: [v] * 5 for c, v in self.aph_yield_dict["rainfed"].items()
+                    c: [v] * self.n_aph_years for c, v in self.aph_yield_dict["rainfed"].items()
                 },
             }
             # Note that the premium_dict_for_dm will be populated in the behavior
@@ -585,7 +588,7 @@ class Field_1f1w_ci(mesa.Agent):
         crop = self.crop
         self.aph_yield_records[field_type][crop].append(crop_yield)
         self.aph_yield_dict[field_type][crop] = np.mean(
-            self.aph_yield_records[field_type][crop][-5:]
+            self.aph_yield_records[field_type][crop][-self.n_aph_years:]
         )
 
     def step(self, irr_depth, i_crop, prec_aw: dict) -> tuple:
@@ -688,7 +691,7 @@ class Field_aquacrop(mesa.Agent):
         i_c = crop_options.index(ini_crop)
         self.i_crop[i_c, 0] = 1
         self.update_crops(self.i_crop)
-        
+
         # Initialize field type
         self.field_type = self.init["field_type"]
 
@@ -699,13 +702,13 @@ class Field_aquacrop(mesa.Agent):
         # Initialize other variables
         self.t = 0
         self.irr_vol = None
-        self.yield_rate_per_field = None    # Averaged value across a field 
-        self.irr_vol_per_field = None       # Averaged value across a field 
+        self.yield_rate_per_field = None    # Averaged value across a field
+        self.irr_vol_per_field = None       # Averaged value across a field
 
     def load_settings(self, settings: dict):
         """
         Load the field settings from a dictionary.
-    
+
         Parameters
         ----------
         settings : dict
@@ -725,7 +728,7 @@ class Field_aquacrop(mesa.Agent):
         Parameters
         ----------
         i_crop : 2d array
-            Indicator array representing the chosen crops for the next year. 
+            Indicator array representing the chosen crops for the next year.
             The dimension of the array should be (n_c, 1).
 
         Returns
@@ -741,7 +744,7 @@ class Field_aquacrop(mesa.Agent):
     def step(self, irr_depth, i_crop, prec_aw: dict) -> tuple:
         """
         Perform a single step of field operation, preparing data for coupling with Aquacrop
-    
+
         Parameters
         ----------
         irr_depth : 3d array
@@ -750,18 +753,18 @@ class Field_aquacrop(mesa.Agent):
             Indicator array representing the chosen crops for each area split.
             Dimensions: (n_s, n_c, 1).
         prec_aw : dict
-            A dictionary of available precipitation for each crop. 
+            A dictionary of available precipitation for each crop.
             {"corn": 27.02, "sorghum": 22.81}
-    
+
         Returns
         -------
         tuple
-            A tuple containing yield [1e4 bu], average yield rate [-], and 
+            A tuple containing yield [1e4 bu], average yield rate [-], and
             total irrigation volume [m-ha].
-    
+
         Notes
         -----
-        This method prepares data for the Aquacrop model by saving relevant information to a CSV file, including the maximum irrigation season, crop name, and irrigation method. 
+        This method prepares data for the Aquacrop model by saving relevant information to a CSV file, including the maximum irrigation season, crop name, and irrigation method.
         """
         self.t += 1
 
@@ -776,8 +779,13 @@ class Field_aquacrop(mesa.Agent):
         irrig_method = [self.field_type]  # assuming this is for irrigation method
 
         # Define the path to the CSV file
-        working_directory = "/path/to/working/directory"
-        folder_name = "examples"
+        # Malena Laptop ->
+        working_directory = "C:\\Users\m154o020\\CHAMP\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\"
+        # Malena PC ->
+        # working_directory = "??"
+        # Michelle Laptop ->
+        # working_directory = "??"
+        folder_name = "examples\\SD6 Model\\"
         file_name = "default.csv"
         file_path = os.path.join(working_directory, folder_name, file_name)
 
@@ -795,7 +803,7 @@ class Field_aquacrop(mesa.Agent):
                 'crop_name': crop_name,
                 'irrig_method': irrig_method
             })
-            
+
             # Append new data to the existing DataFrame
             df_updated = pd.concat([df_existing, new_data], ignore_index=True)
         else:

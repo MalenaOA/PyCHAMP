@@ -102,7 +102,10 @@ class Aquifer(mesa.Agent):
         self.init = settings["init"]
 
     # def step(self, withdrawal: float, inflow: float | None = None) -> float:
-    def step(self, withdrawal: float, inflow = None) -> float:
+    def step(self,
+             withdrawal: float,
+             inflow = None
+             ) -> float:
         """
         Perform a single step of the aquifer simulation.
 
