@@ -8,15 +8,16 @@ import os
 # wd = r"C:\Users\CL\OneDrive\VT\Proj_DIESE\Code"
 # Malena PC ->
 #wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP"
-wd = r"/Users/michellenguyen/Downloads/PyCHAMP"
+# Michelle Laptop ->
+# wd = r"/Users/michellenguyen/Downloads/PyCHAMP"
 # Malena Laptop ->
-# wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
+wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
 import sys
 
 sys.setrecursionlimit(10000)
 import dill
 
-from py_champ.models.sd6_model import SD6Model
+from py_champ.models.sd6_model_aquacrop import SD6ModelAquacrop
 
 # %%
 # =============================================================================
@@ -26,8 +27,9 @@ from py_champ.models.sd6_model import SD6Model
 # Malena PC ->
 #wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\SD6 Model"
 # Malena Laptop ->
-# wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
-wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/SD6 Model"
+wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
+# Michelle Laptop ->
+# wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/SD6 Model"
 with open(os.path.join(wd, "Inputs_SD6.pkl"), "rb") as f:
     (
         aquifers_dict,
@@ -52,7 +54,7 @@ pars = {
     "un_thre": 0.0773514357873846,
 }
 
-m = SD6Model(
+m = SD6ModelAquacrop(
     pars=pars,
     crop_options=crop_options,
     tech_options=tech_options,
@@ -83,8 +85,8 @@ m.end()
 # =============================================================================
 # Analyze results
 # =============================================================================
-df_farmers, df_fields, df_wells, df_aquifers = SD6Model.get_dfs(m)
-df_sys = SD6Model.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
+df_farmers, df_fields, df_wells, df_aquifers = SD6ModelAquacrop.get_dfs(m)
+df_sys = SD6ModelAquacrop.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
 
 # df_sys["GW_st"].plot()
 # df_sys["withdrawal"].plot()
@@ -101,30 +103,30 @@ print(df_fields)
 
 import seaborn
 
-from plot_EMS import (plot_cali_gwrc,
-                      plot_crop_ratio,
+from plot_EMS import (plot_cali_gwrc, 
+                      plot_crop_ratio, 
                       reg_prec_withdrawal)
 
 # Plot results
-plot_cali_gwrc(df_sys.reindex(data.index),
-               data,
-               metrices,
-               prec_avg,
+plot_cali_gwrc(df_sys.reindex(data.index), 
+               data, 
+               metrices, 
+               prec_avg, 
                stochastic=[],
                savefig=None)
 
-plot_crop_ratio(df_sys.reindex(data.index),
-                data,
-                metrices,
+plot_crop_ratio(df_sys.reindex(data.index), 
+                data, 
+                metrices, 
                 prec_avg,
                 savefig=None)
 
-reg_prec_withdrawal(prec_avg,
-                     df_sys.reindex(data.index),
-                     df_sys_nolema=None,
+reg_prec_withdrawal(prec_avg, 
+                     df_sys.reindex(data.index), 
+                     df_sys_nolema=None, 
                      data=data,
                      df_sys_list=None,
-                     df_sys_nolema_list=None,
-                     dot_labels=True,
-                     obv_dots=False,
+                     df_sys_nolema_list=None, 
+                     dot_labels=True, 
+                     obv_dots=False, 
                      savefig=None)

@@ -481,15 +481,18 @@ class Field_1f1w_ci(mesa.Agent):
         # Initialize field type
         self.field_type = self.init["field_type"]
 
+        # Numerber of years for the aph yield calculation
+        self.n_aph_years = 10
+
         # Initialize aph_yield_records & aph_yield_dict (in unit of 1e4 bu/field)
         if self.model.activate_ci:
             self.aph_yield_dict = self.init.get("aph_yield")
             self.aph_yield_records = {
                 "irrigated": {
-                    c: [v] * 5 for c, v in self.aph_yield_dict["irrigated"].items()
+                    c: [v] * self.n_aph_years for c, v in self.aph_yield_dict["irrigated"].items()
                 },
                 "rainfed": {
-                    c: [v] * 5 for c, v in self.aph_yield_dict["rainfed"].items()
+                    c: [v] * self.n_aph_years for c, v in self.aph_yield_dict["rainfed"].items()
                 },
             }
             # Note that the premium_dict_for_dm will be populated in the behavior
@@ -585,7 +588,7 @@ class Field_1f1w_ci(mesa.Agent):
         crop = self.crop
         self.aph_yield_records[field_type][crop].append(crop_yield)
         self.aph_yield_dict[field_type][crop] = np.mean(
-            self.aph_yield_records[field_type][crop][-5:]
+            self.aph_yield_records[field_type][crop][-self.n_aph_years:]
         )
 
     def step(self, irr_depth, i_crop, prec_aw: dict) -> tuple:
@@ -658,13 +661,11 @@ class Field_1f1w_ci(mesa.Agent):
         # All crop insurance related update should be done in the finance module.
         return y, avg_y_y, irr_vol
 
-
-
 class Field_aquacrop(mesa.Agent):
-    """ Simulate a field agent in the model. """
-
+    """ Simulate a field agent in the model, focusing on coupling with the Aquacrop model """
     def __init__(self, unique_id, model, settings: dict, **kwargs):
         """Initialize a Field agent.
+
         Parameters
         ----------
         unique_id : int
@@ -673,7 +674,7 @@ class Field_aquacrop(mesa.Agent):
             The mesa model instance to which this agent belongs.
         settings : dict
             A dictionary containing initial settings for the field, which include field
-            area, water yield curves, climate data id, and initial conditions.
+            area, initial conditions, and crop options.
         """
         # MESA required attributes => (unique_id, model)
         super().__init__(unique_id, model)
@@ -684,13 +685,12 @@ class Field_aquacrop(mesa.Agent):
 
         # Initialize and update crop
         crop_options = self.model.crop_options
-        i_crop = np.zeros((self.n_c, 1))
         ini_crop = self.init["crop"]
         self.crop = ini_crop
+        self.i_crop = np.zeros((self.n_c, 1))
         i_c = crop_options.index(ini_crop)
-        i_crop[i_c, 0] = 1
-        self.i_crop = i_crop
-        self.update_crops(i_crop)
+        self.i_crop[i_c, 0] = 1
+        self.update_crops(self.i_crop)
 
         # Initialize field type
         self.field_type = self.init["field_type"]
@@ -702,9 +702,8 @@ class Field_aquacrop(mesa.Agent):
         # Initialize other variables
         self.t = 0
         self.irr_vol = None
-        self.yield_rate_per_field = None  # Averaged value across a field
-        self.irr_vol_per_field = None  # Averaged value across a field
-
+        self.yield_rate_per_field = None    # Averaged value across a field
+        self.irr_vol_per_field = None       # Averaged value across a field
 
     def load_settings(self, settings: dict):
         """
@@ -713,39 +712,25 @@ class Field_aquacrop(mesa.Agent):
         Parameters
         ----------
         settings : dict
-            A dictionary containing settings for the field, including field
-            area, water yield curves for crops, and technological coefficients.
+            A dictionary containing settings for the field, including field area and initial conditions
         """
-        crop_options = self.model.crop_options
         self.field_area = settings["field_area"]
-        self.water_yield_curves = settings["water_yield_curves"]
-        self.prec_aw_id = settings["prec_aw_id"]
         self.init = settings["init"]
+        self.n_c = len(self.model.crop_options)
 
-        self.n_c = len(crop_options)
-
-        crop_par = np.array([self.water_yield_curves[c] for c in crop_options])
-        self.ymax = crop_par[:, 0].reshape((-1, 1))  # (n_c, 1)
-        self.wmax = crop_par[:, 1].reshape((-1, 1))  # (n_c, 1)
-        self.a = crop_par[:, 2].reshape((-1, 1))  # (n_c, 1)
-        self.b = crop_par[:, 3].reshape((-1, 1))  # (n_c, 1)
-        self.c = crop_par[:, 4].reshape((-1, 1))  # (n_c, 1)
-        try:
-            self.min_y_ratio = crop_par[:, 5].reshape((-1, 1))  # (n_c, 1)
-        except:
-            self.min_y_ratio = np.zeros((self.n_c, 1))
-
+        # Crop parameters are no longer needed for CSV generation
         self.unit_area = self.field_area
-
 
     def update_crops(self, i_crop):
         """
         Update the crop types based on the given indicator array.
+
         Parameters
         ----------
         i_crop : 2d array
             Indicator array representing the chosen crops for the next year.
             The dimension of the array should be (n_c, 1).
+
         Returns
         -------
         None
@@ -756,11 +741,9 @@ class Field_aquacrop(mesa.Agent):
         self.crop = crop
         self.i_crop = i_crop
 
-
     def step(self, irr_depth, i_crop, prec_aw: dict) -> tuple:
         """
-        Perform a single step of field operation, calculating yields and
-        irrigation volumes.
+        Perform a single step of field operation, preparing data for coupling with Aquacrop
 
         Parameters
         ----------
@@ -781,42 +764,14 @@ class Field_aquacrop(mesa.Agent):
 
         Notes
         -----
-        This method calculates the yield based on the applied irrigation, chosen crops,
-        install technology, and available precipitation.
+        This method prepares data for the Aquacrop model by saving relevant information to a CSV file, including the maximum irrigation season, crop name, and irrigation method.
         """
         self.t += 1
 
-        a = self.a
-        b = self.b
-        c = self.c
-        ymax = self.ymax
-        wmax = self.wmax
-        unit_area = self.unit_area
-        crop_options = self.model.crop_options
-
-        ### Yield calculation
-        irr_depth = irr_depth.copy()[:, [0]]
-        prec_aw_ = np.ones(irr_depth.shape)
-        for ci, crop in enumerate(crop_options):
-            prec_aw_[ci, :] = prec_aw[crop]
-
-        w = irr_depth + prec_aw_
-        w = w * i_crop
-        w_ = w / wmax  # normalized applied water
-        w_ = np.minimum(w_, 1)
-        y_ = (a * w_ ** 2 + b * w_ + c)  # normalized yield
-        y_ = np.maximum(0, y_)
-        y_ = y_ * i_crop
-
-        self.update_crops(i_crop)  # update pre_i_crop
-
-        y = y_ * ymax * unit_area * 1e-4  # 1e4 bu
-
+        # Calculate total irrigation volume
         cm2m = 0.01
-        v_c = irr_depth * unit_area * cm2m  # m-ha
+        v_c = irr_depth * self.unit_area * cm2m  # m-ha
         irr_vol = np.sum(v_c)  # m-ha
-        avg_y_y = np.sum(y_)
-        avg_w = np.sum(w)
 
         # Prepare data for CSV output
         max_irrseason = irr_depth.flatten().tolist()
@@ -824,9 +779,14 @@ class Field_aquacrop(mesa.Agent):
         irrig_method = [self.field_type]  # assuming this is for irrigation method
 
         # Define the path to the CSV file
-        working_directory = "/path/to/working/directory"
-        folder_name = "examples"
-        file_name = "existing_data.csv"
+        # Malena Laptop ->
+        working_directory = "C:\\Users\m154o020\\CHAMP\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\"
+        # Malena PC ->
+        # working_directory = "??"
+        # Michelle Laptop ->
+        # working_directory = "??"
+        folder_name = "examples\\SD6 Model\\"
+        file_name = "default.csv"
         file_path = os.path.join(working_directory, folder_name, file_name)
 
         print(f"CSV file path: {file_path}")  # Debugging: Print file path
@@ -858,4 +818,4 @@ class Field_aquacrop(mesa.Agent):
         df_updated.to_csv(file_path, index=False)
         print(f"Data saved to CSV.")  # Debugging: Confirm data save
 
-        return y, avg_y_y, irr_vol
+        return irr_vol, self.crop
