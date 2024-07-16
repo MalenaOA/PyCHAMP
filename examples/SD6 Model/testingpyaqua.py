@@ -7,11 +7,11 @@ import os
 
 # wd = r"C:\Users\CL\OneDrive\VT\Proj_DIESE\Code"
 # Malena PC ->
-#wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP"
+wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP"
 # Michelle Laptop ->
 # wd = r"/Users/michellenguyen/Downloads/PyCHAMP"
 # Malena Laptop ->
-wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
+# wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
 import sys
 
 sys.setrecursionlimit(10000)
@@ -25,9 +25,9 @@ from py_champ.models.sd6_model_aquacrop import SD6ModelAquacrop
 # =============================================================================
 # Load data
 # Malena PC ->
-#wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\SD6 Model"
+wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\SD6 Model"
 # Malena Laptop ->
-wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
+# wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\SD6 Model"
 # Michelle Laptop ->
 # wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/SD6 Model"
 with open(os.path.join(wd, "Inputs_SD6.pkl"), "rb") as f:

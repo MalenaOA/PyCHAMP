@@ -78,7 +78,7 @@ m = SD6Model(
 
 for i in range(15):
         m.step()
-
+m.end()
 
 # read outputs for attributes related to different agent types
 df_farmers, df_fields, df_wells, df_aquifers = SD6Model.get_dfs(m)
