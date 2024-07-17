@@ -3,11 +3,16 @@ import os
 import sys
 import dill
 import pandas as pd
+import seaborn
 
 from py_champ.models.sd6_model_1f1w import SD6Model4SingleFieldAndWell
+from plot_1f1w import (plot_cali_gwrc, plot_cali_gwrc2, plot_crop_ratio, reg_prec_withdrawal)
 
 # Define the working directory
-wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
+# Malena PC ->
+# wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
+# Malena Laptop ->
+wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
 
 # Add the 'code' directory to sys.path if not already present
 if wd not in sys.path:
@@ -110,50 +115,58 @@ m.end()
 # =============================================================================
 # Analyze results
 # =============================================================================
-# df_farmers, df_fields, df_wells, df_aquifers = SD6Model4SingleFieldAndWell.get_dfs(m)
-# df_sys = SD6Model.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
-
+data = sd6_data
 df_sys, df_agt = m.get_dfs(m)
+metrices = m.get_metrices(df_sys, data) # same length
 
-df_sys["GW_st"].plot()
-df_sys["withdrawal"].plot()
-df_sys[["corn", "others"]].plot()
-df_sys[["Imitation", "Social comparison", "Repetition", "Deliberation"]].plot()
+# Save results to CSV files
+df_sys_file, df_agt_file = m.save_results()
 
-# # import pandas as pd
-# data = sd6_data
-# #
-# # prec_avg = pd.read_csv(os.path.join(wd, paths.prec_avg), index_col=[0]).iloc[1:, :]
-#
-# metrices = m.get_metrices(df_sys, sd6_data) # same length
-# # print(df_fields)
-#
-# import seaborn
-#
-# from plot_EMS import (plot_cali_gwrc,
-#                       plot_crop_ratio,
-#                       reg_prec_withdrawal)
-#
-# # Plot results
-# plot_cali_gwrc(df_sys.reindex(data.index),
-#                data,
-#                metrices,
-#                prec_avg,
-#                stochastic=[],
-#                savefig=None)
-#
-# plot_crop_ratio(df_sys.reindex(data.index),
-#                 data,
-#                 metrices,
-#                 prec_avg,
-#                 savefig=None)
-#
-# reg_prec_withdrawal(prec_avg,
-#                      df_sys.reindex(data.index),
-#                      df_sys_nolema=None,
-#                      data=data,
-#                      df_sys_list=None,
-#                      df_sys_nolema_list=None,
-#                      dot_labels=True,
-#                      obv_dots=False,
-#                      savefig=None)
+# Load the saved results
+df_sys_results = pd.read_csv(df_sys_file, index_col=0)
+df_agt_results = pd.read_csv(df_agt_file, index_col=0)
+
+# Generate the plots using the saved CSV files
+output_dir = "plots"
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# =============================================================================
+# Plot results
+# =============================================================================
+# df_sys["GW_st"].plot()
+# df_sys["withdrawal"].plot()
+# df_sys[["corn", "sorghum", "soybeans", "wheat", "fallow"]].plot()
+# df_sys[["Imitation", "Social comparison", "Repetition", "Deliberation"]].plot()
+
+plot_cali_gwrc(df_sys_results.reindex(data.index),
+               data,
+               metrices,
+               prec_avg,
+               stochastic=[],
+               savefig=os.path.join(output_dir, f"cali_gwrc_{timestamp}.png"))
+
+plot_cali_gwrc2(df_sys_results.reindex(data.index),
+               data,
+               metrices,
+               prec_avg,
+               stochastic=[],
+               savefig=os.path.join(output_dir, f"cali_gwrc2_{timestamp}.png"))
+
+plot_crop_ratio(df_sys_results.reindex(data.index),
+                data,
+                metrices,
+                prec_avg,
+                savefig=os.path.join(output_dir, f"crop_ratio_{timestamp}.png"))
+
+reg_prec_withdrawal(prec_avg,
+                     df_sys_results.reindex(data.index),
+                     df_sys_nolema=None,
+                     data=data,
+                     df_sys_list=None,
+                     df_sys_nolema_list=None,
+                     dot_labels=True,
+                     obv_dots=False,
+                     savefig=os.path.join(output_dir, f"prec_withdrawal_{timestamp}.png"))

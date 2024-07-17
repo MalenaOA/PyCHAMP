@@ -5,6 +5,7 @@ import mesa
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import datetime
 
 from ..components.aquifer import Aquifer
 from ..components.behavior import Behavior4SingleFieldAndWell
@@ -256,8 +257,8 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         Simulation period:\t{self.start_year} to {self.end_year}
         Number of agents:\t{len(behaviors_dict)}
         Number of aquifers:\t{len(aquifers_dict)}
-        Initialiation duration:\t{self.time_recorder.get_elapsed_time()}
-        Estimated sim duration:\t{estimated_sim_dur}
+        Initialization duration:\t{self.time_recorder.get_elapsed_time()}
+        Estimated duration of simulation:\t{estimated_sim_dur}
         """
         if show_initialization:
             print(msg)
@@ -335,7 +336,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         # Collect df_sys and print info
         self.datacollector.collect(self)
         if self.lema and current_year == self.lema_year and self.show_step:
-            print("LEMA begin")
+            print("= LEMA conservation policy begins = ")
         if self.show_step:
             print(
                 f"Year {self.current_year} [{self.t}/{self.total_steps}]"
@@ -464,6 +465,9 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             df_sys[f"{s}"] = dff.xs(s, level="state")
         df_sys = df_sys.round(4)
 
+        df_sys["Profit per water use"] = df_agt["profit"] / df_sys["withdrawal"]
+        df_sys["Energy per water use"] = df_agt["energy_cost"] / df_sys["withdrawal"]
+
         return df_sys, df_agt
 
     @staticmethod
@@ -513,3 +517,27 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             )
         metrices = pd.concat(metrices)
         return metrices
+
+    @staticmethod
+    def save_results(self, output_dir="outputs"):
+        """
+        Save the main outputs of the model to CSV files with unique names.
+
+        Parameters
+        ----------
+        output_dir : str
+            The directory where the output CSV files will be saved.
+        """
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        df_sys, df_agt = self.get_dfs(self)
+
+        df_sys_file = os.path.join(output_dir, f"df_sys_{timestamp}.csv")
+        df_agt_file = os.path.join(output_dir, f"df_agt_{timestamp}.csv")
+
+        df_sys.to_csv(df_sys_file)
+        df_agt.to_csv(df_agt_file)
+
+        return df_sys_file, df_agt_file

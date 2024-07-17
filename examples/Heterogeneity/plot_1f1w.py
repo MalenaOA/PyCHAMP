@@ -55,7 +55,7 @@ def plot_cali_gwrc(df_sys=None, data=None, metrices=None, prec_avg=None, stochas
         ax.legend(loc="upper right", ncols=2)
         ax.axvline(2012.5, c="red", ls=":", lw=1)
         ax.axvline(2017.5, c="grey", ls=":", lw=1)
-        ax.set_xlim([2008, 2022])
+        ax.set_xlim([2011, 2022])
         ylabels = ["Saturated\nthickness (m)", "Withdrawal\n($10^6$ $m^3$)"]
         ax.set_ylabel(ylabels[i], fontsize=12)
 
@@ -152,7 +152,7 @@ def plot_cali_gwrc2(df_sys=None, data=None, metrices=None, prec_avg=None, stocha
     ax.legend(loc="upper right", ncols=2)
     ax.axvline(2012.5, c="red", ls=":", lw=1)
     ax.axvline(2017.5, c="grey", ls=":", lw=1)
-    ax.set_xlim([2008, 2022])
+    ax.set_xlim([2011, 2022])
     ax.set_ylabel("(a)\n\nSaturated\nthickness (m)", fontsize=12)
 
     # Withdrawal
@@ -173,7 +173,7 @@ def plot_cali_gwrc2(df_sys=None, data=None, metrices=None, prec_avg=None, stocha
     ax.legend(loc="upper right", ncols=2)
     ax.axvline(2012.5, c="red", ls=":", lw=1)
     ax.axvline(2017.5, c="grey", ls=":", lw=1)
-    ax.set_xlim([2008, 2022])
+    ax.set_xlim([2011, 2022])
     ax.set_ylabel("(b)\n\nWithdrawal\n($10^6$ $m^3$)", fontsize=12)
 
     # State ratio
@@ -215,7 +215,7 @@ def plot_cali_gwrc2(df_sys=None, data=None, metrices=None, prec_avg=None, stocha
     ax.legend(loc="upper left", ncols=2)
     ax.axvline(2012.5, c="red", ls=":", lw=1)
     ax.axvline(2017.5, c="grey", ls=":", lw=1)
-    ax.set_xlim([2008, 2022])
+    ax.set_xlim([2011, 2022])
     ax.set_ylabel("(d)\nProfit per\nwater use\n($10^4$/cm)", fontsize=12)
 
     # Energy
@@ -230,7 +230,7 @@ def plot_cali_gwrc2(df_sys=None, data=None, metrices=None, prec_avg=None, stocha
     ax.legend(loc="upper left", ncols=2)
     ax.axvline(2012.5, c="red", ls=":", lw=1)
     ax.axvline(2017.5, c="grey", ls=":", lw=1)
-    ax.set_xlim([2008, 2022])
+    ax.set_xlim([2011, 2022])
     ax.set_ylabel("(e)\nProfit per\nwater use\n($10^4$/cm)", fontsize=12)
 
     fig.align_ylabels(axes)
@@ -249,7 +249,7 @@ def plot_cali_gwrc2(df_sys=None, data=None, metrices=None, prec_avg=None, stocha
 #%%
 
 def plot_crop_ratio(df_sys=None, data=None, metrices=None, prec_avg=None, title=None, stochastic=[],
-                    crop_options=["corn", "sorghum", "soybeans", "wheat", "fallow"], savefig=None):
+                    crop_options=["corn", "others"], savefig=None):
     # Wet Dry background
     def plot_wet_dry_bc(ax):
         if prec_avg is not None:
@@ -261,8 +261,8 @@ def plot_crop_ratio(df_sys=None, data=None, metrices=None, prec_avg=None, title=
                     ax.axvspan(row['year'] - 0.5, row['year'] + 0.5, color="gray", alpha=0.2, lw=0)
 
     ##### Crop ratio
-    c_hex_list = ['#FDC829', '#8D464C', '#C0B28A', '#DA9746', '#4B4B4B']
-    abcde = ["a", "b", "c", "d", "e"]
+    c_hex_list = ['#FDC829', '#8D464C']
+    abcde = ["a", "b"]
     fig, axes = plt.subplots(ncols=3, nrows=2, figsize=(5, 4), sharex=True, sharey=True)
     axes = axes.flatten()
     for i, crop in enumerate(crop_options):
@@ -287,7 +287,7 @@ def plot_crop_ratio(df_sys=None, data=None, metrices=None, prec_avg=None, title=
                 ax.plot(x, df[crop], c=c_hex_list[i], zorder=1, alpha=0.2, lw=0.5)
 
         ax.set_title(f'({abcde[i]})\n'+crop.capitalize())
-        ax.set_xlim([2008, 2022])
+        ax.set_xlim([2011, 2022])
         ax.set_ylim([0, 1])
         ax.axvline(2012.5, c="red", ls=":", lw=1)
         ax.axvline(2017.5, c="grey", ls=":", lw=1)
@@ -318,9 +318,9 @@ def reg_prec_withdrawal(prec_avg, df_sys, df_sys_nolema=None, data=None,
                         df_sys_list=None, df_sys_nolema_list=None,
                         dot_labels=False, obv_dots=False, savefig=None):
     # Split the dataframe based on years
-    prec_2008_2012 = prec_avg.loc[2008:2012, 'annual']
-    step = (max(prec_2008_2012)-min(prec_2008_2012))/100
-    x_2008_2012 = np.arange(min(prec_2008_2012), max(prec_2008_2012)+step, step)
+    prec_2011_2012 = prec_avg.loc[2011:2012, 'annual']
+    step = (max(prec_2011_2012)-min(prec_2011_2012))/100
+    x_2011_2012 = np.arange(min(prec_2011_2012), max(prec_2011_2012)+step, step)
     prec_2013_2022 = prec_avg.loc[2013:2022, 'annual']
     step = (max(prec_2013_2022)-min(prec_2013_2022))/100
     x_2013_2022 = np.arange(min(prec_2013_2022), max(prec_2013_2022)+step, step)
@@ -338,22 +338,22 @@ def reg_prec_withdrawal(prec_avg, df_sys, df_sys_nolema=None, data=None,
     # Create a figure and axis object
     fig, ax = plt.subplots(figsize=(5.5, 4))
     label_list=[]
-    df_sys_withdrawal_2008_2012 = df_sys.loc[2008:2012, 'withdrawal']/100
-    m1, b1 = np.polyfit(prec_2008_2012, df_sys_withdrawal_2008_2012, 1)
-    ax.scatter(prec_2008_2012, df_sys_withdrawal_2008_2012, color='k', label='Pre-LEMA (2008-2012)', alpha=0.6)
+    df_sys_withdrawal_2011_2012 = df_sys.loc[2011:2012, 'withdrawal']/100
+    m1, b1 = np.polyfit(prec_2011_2012, df_sys_withdrawal_2011_2012, 1)
+    ax.scatter(prec_2011_2012, df_sys_withdrawal_2011_2012, color='k', label='Pre-LEMA (2011-2012)', alpha=0.6)
     if dot_labels:
-        label_list = add_labels(df_sys_withdrawal_2008_2012.index, x=prec_2008_2012, y=df_sys_withdrawal_2008_2012, color='k', label_list=label_list)
-    ax.plot(x_2008_2012, m1*x_2008_2012 + b1, color='k')
+        label_list = add_labels(df_sys_withdrawal_2011_2012.index, x=prec_2011_2012, y=df_sys_withdrawal_2011_2012, color='k', label_list=label_list)
+    ax.plot(x_2011_2012, m1*x_2011_2012 + b1, color='k')
     if df_sys_list is not None:
         lines = []
         for df in df_sys_list:
-            m1, b1 = np.polyfit(prec_2008_2012, df.loc[2008:2012, 'withdrawal']/100, 1)
-            lines.append(m1*x_2008_2012 + b1)
+            m1, b1 = np.polyfit(prec_2011_2012, df.loc[2011:2012, 'withdrawal']/100, 1)
+            lines.append(m1*x_2011_2012 + b1)
         lines = np.array(lines)
         lines_mean = np.mean(lines, axis=0)
         lines_std = np.std(lines, axis=0)
         ci = 2 * lines_std
-        ax.fill_between(x_2008_2012, lines_mean - ci, lines_mean + ci, color='k', alpha=0.15)
+        ax.fill_between(x_2011_2012, lines_mean - ci, lines_mean + ci, color='k', alpha=0.15)
 
     df_sys_withdrawal_2013_2022 = df_sys.loc[2013:2022, 'withdrawal']/100
     m1, b1 = np.polyfit(prec_2013_2022, df_sys_withdrawal_2013_2022, 1)
@@ -392,14 +392,14 @@ def reg_prec_withdrawal(prec_avg, df_sys, df_sys_nolema=None, data=None,
             ax.fill_between(x_2013_2022, lines_mean - ci, lines_mean + ci, color='red', alpha=0.15)
 
     if data is not None:
-        m1, b1 = np.polyfit(prec_2008_2012, data.loc[2008:2012, 'withdrawal']/100, 1)
-        ax.plot(x_2008_2012, m1*x_2008_2012 + b1, color='k', ls="--", alpha=0.5, lw=0.5)
+        m1, b1 = np.polyfit(prec_2011_2012, data.loc[2011:2012, 'withdrawal']/100, 1)
+        ax.plot(x_2011_2012, m1*x_2011_2012 + b1, color='k', ls="--", alpha=0.5, lw=0.5)
 
         m2, b2 = np.polyfit(prec_2013_2022, data.loc[2013:2022, 'withdrawal']/100, 1)
         ax.plot(x_2013_2022, m2*x_2013_2022 + b2, color='blue', ls="--", alpha=0.5, lw=0.5)
 
         if obv_dots:
-            ax.scatter(prec_2008_2012, data.loc[2008:2012, 'withdrawal']/100, color='k',
+            ax.scatter(prec_2011_2012, data.loc[2011:2012, 'withdrawal']/100, color='k',
                        label='Observation', alpha=0.6, marker="+")
             ax.scatter(prec_2013_2022, data.loc[2013:2022, 'withdrawal']/100,
                        color='blue', alpha=0.4, marker="+")  # , label='Post-LEMA (obv)'
