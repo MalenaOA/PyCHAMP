@@ -5,7 +5,6 @@ import mesa
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import datetime
 
 from ..components.aquifer import Aquifer
 from ..components.behavior import Behavior4SingleFieldAndWell
@@ -27,26 +26,26 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
     and well owned by a farmer agent."""
 
     def __init__(
-        self,
-        pars,
-        crop_options,
-        prec_aw_step,
-        aquifers_dict,
-        fields_dict,
-        wells_dict,
-        finances_dict,
-        behaviors_dict,
-        components=None,
-        optimization_class=Optimization4SingleFieldAndWell,
-        init_year=2011,
-        end_year=2022,
-        lema_options=(True, "wr_LEMA_5yr", 2013),
-        fix_state=None,
-        show_step=True,
-        show_initialization=True,
-        seed=None,
-        gurobi_dict=None,
-        **kwargs,
+            self,
+            pars,
+            crop_options,
+            prec_aw_step,
+            aquifers_dict,
+            fields_dict,
+            wells_dict,
+            finances_dict,
+            behaviors_dict,
+            components=None,
+            optimization_class=Optimization4SingleFieldAndWell,
+            init_year=2011,
+            end_year=2022,
+            lema_options=(True, "wr_LEMA_5yr", 2013),
+            fix_state=None,
+            show_step=True,
+            show_initialization=True,
+            seed=None,
+            gurobi_dict=None,
+            **kwargs,
     ):
         # Time and Step recorder
         self.time_recorder = TimeRecorder()
@@ -127,8 +126,8 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             if isinstance(field_dict["init"]["crop"], list):
                 raise NotImplementedError(
                     "Multiple crop types per field is not supported. "
-                    +"Initial crop type must be a single string."
-                    )
+                    + "Initial crop type must be a single string."
+                )
 
             # Initialize fields
             agt_field = self.components["field"](
@@ -152,7 +151,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         for wid, well_dict in wells_dict.items():
             agt_well = self.components["well"](
                 unique_id=wid, model=self, settings=well_dict
-                )
+            )
             wells[wid] = agt_well
             self.schedule.add(agt_well)
         self.wells = wells
@@ -163,9 +162,9 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         behaviors = {}
         finances = {}
         for behavior_id, behavior_dict in tqdm(
-            behaviors_dict.items(),
-            desc="Initialize behavior agents",
-            disable=not show_initialization
+                behaviors_dict.items(),
+                desc="Initialize behavior agents",
+                disable=not show_initialization
         ):
             # Initialize finance
             finance_id = behavior_dict["finance_id"]
@@ -177,7 +176,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             )
             agt_finance.finance_id = finance_id
             # Assume one behavior agent has one finance object
-            finances[behavior_id] = agt_finance  
+            finances[behavior_id] = agt_finance
             self.schedule.add(agt_finance)
 
             agt_behavior = self.components["behavior"](
@@ -257,8 +256,8 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         Simulation period:\t{self.start_year} to {self.end_year}
         Number of agents:\t{len(behaviors_dict)}
         Number of aquifers:\t{len(aquifers_dict)}
-        Initialization duration:\t{self.time_recorder.get_elapsed_time()}
-        Estimated duration of simulation:\t{estimated_sim_dur}
+        Initialiation duration:\t{self.time_recorder.get_elapsed_time()}
+        Estimated sim duration:\t{estimated_sim_dur}
         """
         if show_initialization:
             print(msg)
@@ -267,12 +266,12 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         """
         Advance the model by one step.
 
-        This method progresses the simulation by one year. It involves updating crop 
-        prices, deciding field types based on agent behavior, applying LEMA policy, and 
-        executing the step functions of all agents. Finally, it collects data and 
+        This method progresses the simulation by one year. It involves updating crop
+        prices, deciding field types based on agent behavior, applying LEMA policy, and
+        executing the step functions of all agents. Finally, it collects data and
         updates the model's state.
 
-        The method controls the flow of the simulation, ensuring that each agent and 
+        The method controls the flow of the simulation, ensuring that each agent and
         component of the model acts according to the current time step and the state of
         the environment.
         """
@@ -310,7 +309,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             else:
                 behavior.wr_dict[self.lema_wr_name]["status"] = False
 
-            # Save the decisions from the previous step. 
+            # Save the decisions from the previous step.
             # (very important for retrieving the neighbor's previous decision)
             behavior.pre_dm_sols = behavior.dm_sols
 
@@ -336,7 +335,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         # Collect df_sys and print info
         self.datacollector.collect(self)
         if self.lema and current_year == self.lema_year and self.show_step:
-            print("= LEMA conservation policy begins = ")
+            print("LEMA begin")
         if self.show_step:
             print(
                 f"Year {self.current_year} [{self.t}/{self.total_steps}]"
@@ -371,13 +370,13 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         df_fields.loc[df_fields["irr_vol"] == 0, "field_type"] = "rainfed"
         df_fields.loc[df_fields["irr_vol"] > 0, "field_type"] = "irrigated"
         df_fields["irr_depth"] = (
-            df_fields["irr_vol"] / df_fields["field_area"] * 100
+                df_fields["irr_vol"] / df_fields["field_area"] * 100
         )  # cm
         df_fields["fid"] = df_fields["AgentID"]
 
         df_wells = df[df["agt_type"] == "Well"].dropna(axis=1, how="all")
         df_wells["wid"] = df_wells["AgentID"]
-        
+
         df_agt = pd.concat(
             [
                 df_behaviors[
@@ -438,7 +437,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         )
         dff = dff.reindex(new_index).fillna(0)
         df_sys["rainfed"] = (
-            dff.xs("rainfed", level="field_type") / dff.groupby("year").sum()
+                dff.xs("rainfed", level="field_type") / dff.groupby("year").sum()
         )
 
         # Crop type ratio
@@ -463,19 +462,17 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         dff = dff.reindex(new_index).fillna(0)
         for s in all_states:
             df_sys[f"{s}"] = dff.xs(s, level="state")
-        df_sys = df_sys.round(4)
 
-        df_sys["Profit per water use"] = df_agt["profit"] / df_sys["withdrawal"]
-        df_sys["Energy per water use"] = df_agt["energy_cost"] / df_sys["withdrawal"]
+        df_sys = df_sys.round(4)
 
         return df_sys, df_agt
 
     @staticmethod
     def get_metrices(
-        df_sys,
-        data,
-        targets=None,
-        indicators_list=None,
+            df_sys,
+            data,
+            targets=None,
+            indicators_list=None,
     ):
         """
         Calculate various metrics based on system-level data and specified targets.
@@ -496,7 +493,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         pd.DataFrame
             A dataframe containing calculated metrics for each target.
 
-        This method is useful for evaluating the performance of the model against 
+        This method is useful for evaluating the performance of the model against
         real-world data or specific objectives, providing insights into the accuracy
         and reliability of the simulation.
         """
@@ -517,27 +514,3 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             )
         metrices = pd.concat(metrices)
         return metrices
-
-    @staticmethod
-    def save_results(self, output_dir="outputs"):
-        """
-        Save the main outputs of the model to CSV files with unique names.
-
-        Parameters
-        ----------
-        output_dir : str
-            The directory where the output CSV files will be saved.
-        """
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        df_sys, df_agt = self.get_dfs(self)
-
-        df_sys_file = os.path.join(output_dir, f"df_sys_{timestamp}.csv")
-        df_agt_file = os.path.join(output_dir, f"df_agt_{timestamp}.csv")
-
-        df_sys.to_csv(df_sys_file)
-        df_agt.to_csv(df_agt_file)
-
-        return df_sys_file, df_agt_file
