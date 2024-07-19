@@ -520,7 +520,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             df_sys[f"{s}"] = dff.xs(s, level="state")
 
         # =================================
-        # from Finance class
+        # from Finance class # FIX
         # =================================
         # Total profit
         df_sys["total_profit"] = df_agt.groupby("year")["profit"].sum()
@@ -534,16 +534,16 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         df_sys["profit_irr_vol"] = dff["profit"] / dff["irr_vol"]
 
         # =================================
-        # from Well class
+        # from Well class # FIX
         # =================================
         # Total energy
         df_sys["total_energy"] = df_agt.groupby("year")["energy"].sum()
 
-        # Energy per irrigation depth
+        # Energy per irrigation depth cm
         dff = df_agt.groupby("year")[["energy", "irr_depth"]].sum()
         df_sys["energy_irr_depth"] = dff["energy"] / dff["irr_depth"]
 
-        # Energy per irrigation volumen
+        # Energy per irrigation volumen m-ha
         dff = df_agt.groupby("year")[["energy", "irr_vol"]].sum()
         df_sys["energy_irr_vol"] = dff["energy"] / dff["irr_vol"]
 

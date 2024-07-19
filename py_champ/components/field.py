@@ -798,25 +798,25 @@ class Field_aquacrop(mesa.Agent):
         for ci, crop in enumerate(crop_options):
             prec_aw_[ci, :] = prec_aw[crop]
 
-        w = irr_depth + prec_aw_
-        w = w * i_crop
-        w_ = w / wmax    # normalized applied water
-        w_ = np.minimum(w_, 1)
-        y_ = (a * w_**2 + b * w_ + c)   # normalized yield
-        y_ = np.maximum(0, y_)
-        y_ = y_ * i_crop
+        w = irr_depth + prec_aw_ #keep
+        w = w * i_crop #what?
+        w_ = w / wmax    # normalized applied water #could be removed
+        w_ = np.minimum(w_, 1) #what?
+        y_ = (a * w_**2 + b * w_ + c)   # normalized yield #Replace with aquacrop bias corrected yield * unit area and then transformed to bu (different per crop)
+        y_ = np.maximum(0, y_) #what?
+        y_ = y_ * i_crop #what?
 
         self.update_crops(i_crop)   # update pre_i_crop
 
-        y = y_ * ymax * unit_area * 1e-4      # 1e4 bu
+        y = y_ * ymax * unit_area * 1e-4      # 1e4 bu #what?
 
-        cm2m = 0.01
-        v_c = irr_depth * unit_area * cm2m    # m-ha
-        irr_vol = np.sum(v_c)                 # m-ha
-        avg_y_y = np.sum(y_)
-        avg_w = np.sum(w)
+        cm2m = 0.01 #keep
+        v_c = irr_depth * unit_area * cm2m    # m-ha #keep
+        irr_vol = np.sum(v_c)                 # m-ha #keep
+        avg_y_y = np.sum(y_) #keep
+        avg_w = np.sum(w) #keep
 
-        # Record yield information
+        # Record yield information #keep
         self.y = y # 1e4 bu
         self.w = avg_w
         self.yield_rate_per_field = avg_y_y
@@ -826,5 +826,9 @@ class Field_aquacrop(mesa.Agent):
         max_irrseason = irr_depth.flatten().tolist()
         crop_name = [self.crop]  # single crop, no need for flatten
         irrig_method = [self.field_type]  # assuming this is for irrigation method
+
+        # from aqucrop we need bias corrected yield and irrgation, year, crop type. For double checking, irrgation, year and crop type
+        # irr_vol = bias corrected irrgation? if not we'll see
+        # crop type = crop?
 
         return y, avg_y_y, irr_vol, self.crop, max_irrseason, crop_name, irrig_method

@@ -19,12 +19,15 @@ from plot_1f1w import (plot_GW_st,
                        plot_behavior)
 
 # Define the working directory
+
+# ADD FUNCTION TO GET ABSOLUTE PATH AND DEFINED IT!!
+
 # Malena PC ->
-# wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
+wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
 # Malena Laptop ->
 #wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
 # Michelle Laptop 
-wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
+# wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
 
 # Set this to True if you want to load from Outputs directory
 load_from_outputs = False
@@ -140,9 +143,9 @@ else:
     output_dir = os.path.join(wd, "Outputs")
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    df_sys_filename = os.path.join(output_dir, "df_sys_20240718_185338.csv")
-    df_agt_filename = os.path.join(output_dir, "df_agt_20240718_185338.csv")
-    metrices_filename = os.path.join(output_dir, "metrices_20240718_185338.csv")
+    df_sys_filename = os.path.join(output_dir, "df_sys_20240718_204825.csv")
+    df_agt_filename = os.path.join(output_dir, "df_agt_20240718_204825.csv")
+    metrices_filename = os.path.join(output_dir, "metrices_20240718_204825.csv")
 
     df_sys = pd.read_csv(os.path.join(output_dir, df_sys_filename), index_col=0)
     df_agt = pd.read_csv(os.path.join(output_dir, df_agt_filename), index_col=0)
@@ -152,54 +155,53 @@ else:
     if df_sys.index.duplicated().any():
         df_sys = df_sys[~df_sys.index.duplicated(keep='first')]
 
-# print(df_sys)
-# print(len(crop_options))
-
 # =============================================================================
 # Plot results
 # =============================================================================
-# plot_GW_st(df_sys.reindex(data.index),
-#              data,
-#              metrices,
-#              prec_avg,
-#              crop_options,
-#              savefig=os.path.join(output_dir, f"GW_st_{timestamp}.png"))
-#
-# plot_withdrawal(df_sys.reindex(data.index),
-#                  data,
-#                  metrices,
-#                  prec_avg,
-#                  crop_options,
-#                  savefig=os.path.join(output_dir, f"withdrawal_{timestamp}.png"))
-#
-# plot_crop_ratio(df_sys.reindex(data.index),
-#                  data,
-#                  metrices,
-#                  prec_avg,
-#                  crop_options,
-#                  savefig=os.path.join(output_dir, f"crop_ratio_{timestamp}.png"))
-#
-# plot_rainfed(df_sys.reindex(data.index),
-#                  data,
-#                  metrices,
-#                  prec_avg,
-#                  crop_options,
-#                  savefig=os.path.join(output_dir, f"rainfed_{timestamp}.png"))
-#
-# plot_aquifer(df_sys.reindex(data.index),
-#                  data,
-#                  metrices,
-#                  prec_avg,
-#                  crop_options,
-#                  savefig=os.path.join(output_dir, f"aquifer_{timestamp}.png"))
-#
-# plot_field(df_sys.reindex(data.index),
-#                  data,
-#                  metrices,
-#                  prec_avg,
-#                  crop_options,
-#                  savefig=os.path.join(output_dir, f"field_{timestamp}.png"))
-#
+plot_GW_st(df_sys.reindex(data.index),
+             data,
+             metrices,
+             prec_avg,
+             crop_options,
+             savefig=os.path.join(output_dir, f"GW_st_{timestamp}.png"))
+
+plot_withdrawal(df_sys.reindex(data.index),
+                 data,
+                 metrices,
+                 prec_avg,
+                 crop_options,
+                 savefig=os.path.join(output_dir, f"withdrawal_{timestamp}.png"))
+
+plot_crop_ratio(df_sys.reindex(data.index),
+                 data,
+                 metrices,
+                 prec_avg,
+                 crop_options,
+                 savefig=os.path.join(output_dir, f"crop_ratio_{timestamp}.png"))
+
+plot_rainfed(df_sys.reindex(data.index),
+                 data,
+                 metrices,
+                 prec_avg,
+                 crop_options,
+                 savefig=os.path.join(output_dir, f"rainfed_{timestamp}.png"))
+
+plot_aquifer(df_sys.reindex(data.index),
+                 data,
+                 metrices,
+                 prec_avg,
+                 crop_options,
+                 savefig=os.path.join(output_dir, f"aquifer_{timestamp}.png"))
+
+plot_field(df_sys.reindex(data.index),
+                 data,
+                 metrices,
+                 prec_avg,
+                 crop_options,
+                 savefig=os.path.join(output_dir, f"field_{timestamp}.png"))
+
+
+# FIX PLOTS BELOW
 plot_well(df_sys.reindex(data.index),
                  data,
                  metrices,
@@ -214,9 +216,9 @@ plot_finance(df_sys.reindex(data.index),
                  crop_options,
                  savefig=os.path.join(output_dir, f"finance_{timestamp}.png"))
 
-# plot_behavior(df_sys.reindex(data.index),
-#                  data,
-#                  metrices,
-#                  prec_avg,
-#                  crop_options,
-#                  savefig=os.path.join(output_dir, f"behavior_{timestamp}.png"))
+plot_behavior(df_sys.reindex(data.index),
+                 data,
+                 metrices,
+                 prec_avg,
+                 crop_options,
+                 savefig=os.path.join(output_dir, f"behavior_{timestamp}.png"))

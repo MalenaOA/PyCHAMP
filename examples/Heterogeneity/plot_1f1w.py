@@ -132,7 +132,7 @@ def plot_crop_ratio(df_sys=None, data=None, metrices=None, prec_avg=None, crop_o
 
     # Crop ratios
     c_hex_list = [col[crop] for crop in crop_options]
-    plot_wet_dry_bc(ax)
+
     for i, crop in enumerate(crop_options):
         x = list(df_sys.index)
         ax = axes[i]
@@ -149,6 +149,7 @@ def plot_crop_ratio(df_sys=None, data=None, metrices=None, prec_avg=None, crop_o
         ax.set_ylim([0, 1])
         ax.axvline(2013, color=col["k"], ls=":", lw=1)
         ax.axvline(2018, color=col["k"], ls=":", lw=1)
+        plot_wet_dry_bc(ax)
     if len(crop_options) > 1:
         fig.add_subplot(111, frameon=False)
         plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
