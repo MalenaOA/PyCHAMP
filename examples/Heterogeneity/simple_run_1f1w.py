@@ -11,7 +11,9 @@ from py_champ.models.sd6_model_1f1w import SD6Model4SingleFieldAndWell
 # Malena PC ->
 # wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
 # Malena Laptop ->
-wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
+#wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
+# Michelle Laptop 
+wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
 
 # Add the 'code' directory to sys.path if not already present
 if wd not in sys.path:

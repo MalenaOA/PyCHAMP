@@ -5,6 +5,7 @@ import mesa
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import os
 
 from ..components.aquifer import Aquifer
 from ..components.behavior import Behavior4SingleFieldAndWell
@@ -346,6 +347,46 @@ class SD6ModelAquacrop(mesa.Model):
         if self.current_year == self.end_year:
             self.running = False
             print("Done!", f"\t{self.time_recorder.get_elapsed_time()}")
+
+         # Prepare data for CSV output
+        max_irrseason = [field.irr_depth for field in self.fields.values()]
+        crop_name = [field.crop for field in self.fields.values()]
+        irrig_method = [field.field_type for field in self.fields.values()]
+
+        # Define the path to the CSV file
+        working_directory = "D:\\Malena\\CHAMP\\PyCHAMP\\code_20240704\\PyCHAMP"
+        folder_name = "examples\\SD6 Model\\"
+        file_name = "default.csv"
+        file_path = os.path.join(working_directory, folder_name, file_name)
+
+        print(f"CSV file path: {file_path}")  # Debugging: Print file path
+
+        # Check if the file exists
+        if os.path.exists(file_path):
+            # Load existing data
+            df_existing = pd.read_csv(file_path)
+            print(f"Existing data:\n{df_existing.head()}")  # Debugging: Print existing data
+
+            # Create new columns with the data to append
+            new_data = pd.DataFrame({
+                'max_irrseason': max_irrseason,
+                'crop_name': crop_name,
+                'irrig_method': irrig_method
+            })
+
+            # Append new data to the existing DataFrame
+            df_updated = pd.concat([df_existing, new_data], ignore_index=True)
+        else:
+            # If file does not exist, create a new DataFrame
+            df_updated = pd.DataFrame({
+                'max_irrseason': max_irrseason,
+                'crop_name': crop_name,
+                'irrig_method': irrig_method
+            })
+
+        # Save updated DataFrame back to the CSV file
+        df_updated.to_csv(file_path, index=False)
+        print(f"Data saved to CSV.")  # Debugging: Confirm data save
 
     def end(self):
         """Depose the Gurobi environment, ensuring that it is executed only when

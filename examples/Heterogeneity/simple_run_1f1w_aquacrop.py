@@ -7,8 +7,8 @@ import pandas as pd
 from py_champ.models.sd6_model_aquacrop import SD6ModelAquacrop
 
 # Define the working directory
-wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
-
+#wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
+wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
 # Add the 'code' directory to sys.path if not already present
 if wd not in sys.path:
     sys.path.append(os.path.join(wd, "code"))
@@ -108,7 +108,9 @@ m.end()
 
 # # %%
 # # Analyze the results
-# df_sys, df_agt = m.get_dfs(m)
+
+data = sd6_data
+df_sys, df_agt = m.get_dfs(m)
 #
 # visual = SD6Visual()
 # visual.add_sd6_plotting_info(df_sys=df_sys, sd6_data=sd6_data, prec_avg=prec_avg)
@@ -121,7 +123,7 @@ m.end()
 df_farmers, df_fields, df_wells, df_aquifers = SD6ModelAquacrop.get_dfs(m)
 
 # read system level outputs. For e.g., ratios of crop types, irrigation technology, rainfed or irrigated field for the duration of the simulation
-df_sys = SD6Model4SingleFieldAndWell.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
+#df_sys = SD6ModelAquacrop.get_df_sys(m, df_farmers, df_fields, df_wells, df_aquifers)
 metrices = m.get_metrices(df_sys, data) # same length
 print(df_fields)
 
