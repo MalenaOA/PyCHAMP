@@ -129,12 +129,12 @@ print(df_fields)
 
 import seaborn
 
-from plot_1f1w import (plot_cali_gwrc, plot_crop_ratio, reg_prec_withdrawal)
+from plot_1f1w import (plot_cali_gwrc, plots_simulation, reg_prec_withdrawal)
 
 # Plot results
 plot_cali_gwrc(df_sys.reindex(data.index), data, metrices, prec_avg, stochastic=[], savefig=None)
 
-plot_crop_ratio(df_sys.reindex(data.index), data, metrices, prec_avg, savefig=None)
+plots_simulation(df_sys.reindex(data.index), data, metrices, prec_avg, savefig=None)
 
 reg_prec_withdrawal(prec_avg, df_sys.reindex(data.index), df_sys_nolema=None, data=data,
                     df_sys_list=None, df_sys_nolema_list=None, dot_labels=True, obv_dots=False, savefig=None)
