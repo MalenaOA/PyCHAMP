@@ -256,8 +256,8 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         Simulation period:\t{self.start_year} to {self.end_year}
         Number of agents:\t{len(behaviors_dict)}
         Number of aquifers:\t{len(aquifers_dict)}
-        Initialiation duration:\t{self.time_recorder.get_elapsed_time()}
-        Estimated sim duration:\t{estimated_sim_dur}
+        Initialization duration:\t{self.time_recorder.get_elapsed_time()}
+        Estimated duration of simulation:\t{estimated_sim_dur}
         """
         if show_initialization:
             print(msg)
@@ -335,7 +335,7 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         # Collect df_sys and print info
         self.datacollector.collect(self)
         if self.lema and current_year == self.lema_year and self.show_step:
-            print("LEMA begin")
+            print("= LEMA policy begins =")
         if self.show_step:
             print(
                 f"Year {self.current_year} [{self.t}/{self.total_steps}]"
@@ -419,11 +419,19 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         # =============================================================================
         df_sys = pd.DataFrame()
 
-        # Aquifer
+        # =================================
+        # from Aquifer class
+        # =================================
+        # Saturated Thickness
         df_aquifers = df[df["agt_type"] == "Aquifer"].dropna(axis=1, how="all")
         df_sys["GW_st"] = df_aquifers["GW_st"]
+
+        # Water use
         df_sys["withdrawal"] = df_aquifers["withdrawal"]
 
+        # =================================
+        # from Field class
+        # =================================
         # Field_Type ratio
         dff = (
             df_agt[["field_type", "field_area"]]
@@ -436,6 +444,8 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             [all_years, all_field_types], names=["year", "field_type"]
         )
         dff = dff.reindex(new_index).fillna(0)
+
+        # Rainfed Fields
         df_sys["rainfed"] = (
                 dff.xs("rainfed", level="field_type") / dff.groupby("year").sum()
         )
@@ -452,6 +462,50 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
         for c in all_crop_types:
             df_sys[f"{c}"] = dff.xs(c, level="crop") / total
 
+        # Yield per crop
+        dff = df_agt[["crop", "yield"]].groupby([df_agt.index, "crop"]).sum()
+        all_years = dff.index.get_level_values("year").unique()
+        all_crop_types = model.crop_options
+        new_index = pd.MultiIndex.from_product(
+            [all_years, all_crop_types], names=["year", "crop"]
+        )
+        dff = dff.reindex(new_index).fillna(0)
+        for c in all_crop_types:
+            df_sys[f"{c}_yield"] = dff.xs(c, level="crop")
+
+        # Irrigation depth per crop
+        dff = df_agt[["crop", "irr_depth"]].groupby([df_agt.index, "crop"]).sum()
+        all_years = dff.index.get_level_values("year").unique()
+        all_crop_types = model.crop_options
+        new_index = pd.MultiIndex.from_product(
+            [all_years, all_crop_types], names=["year", "crop"]
+        )
+        dff = dff.reindex(new_index).fillna(0)
+        total = dff.groupby("year").sum()
+        for c in all_crop_types:
+            df_sys[f"{c}_irr_depth"] = dff.xs(c, level="crop")
+
+        # Total irrigation depth
+        df_sys["total_irr_depth"] = df_agt.groupby("year")["irr_depth"].sum()
+
+        # Irrigation volumen per crop
+        dff = df_agt[["crop", "irr_vol"]].groupby([df_agt.index, "crop"]).sum()
+        all_years = dff.index.get_level_values("year").unique()
+        all_crop_types = model.crop_options
+        new_index = pd.MultiIndex.from_product(
+            [all_years, all_crop_types], names=["year", "crop"]
+        )
+        dff = dff.reindex(new_index).fillna(0)
+        total = dff.groupby("year").sum()
+        for c in all_crop_types:
+            df_sys[f"{c}_irr_vol"] = dff.xs(c, level="crop")
+
+        # Total irrigation volumen
+        df_sys["total_irr_vol"] = df_agt.groupby("year")["irr_vol"].sum()
+
+        # =================================
+        # from Behavior class
+        # =================================
         # Behavioral agent state ratio
         dff = df_behaviors[["state"]].groupby([df_behaviors.index, "state"]).size()
         all_years = dff.index.get_level_values("year").unique()
@@ -460,8 +514,38 @@ class SD6Model4SingleFieldAndWell(mesa.Model):
             [all_years, all_states], names=["year", "state"]
         )
         dff = dff.reindex(new_index).fillna(0)
+
+        # CONSUMAT States
         for s in all_states:
             df_sys[f"{s}"] = dff.xs(s, level="state")
+
+        # =================================
+        # from Finance class
+        # =================================
+        # Total profit
+        df_sys["total_profit"] = df_agt.groupby("year")["profit"].sum()
+
+        # Profit per irrigation depth
+        dff = df_agt.groupby("year")[["profit", "irr_depth"]].sum()
+        df_sys["profit_irr_depth"] = dff["profit"] / dff["irr_depth"]
+
+        # Profit per irrigation volumen
+        dff = df_agt.groupby("year")[["profit", "irr_vol"]].sum()
+        df_sys["profit_irr_vol"] = dff["profit"] / dff["irr_vol"]
+
+        # =================================
+        # from Well class
+        # =================================
+        # Total energy
+        df_sys["total_energy"] = df_agt.groupby("year")["energy"].sum()
+
+        # Energy per irrigation depth
+        dff = df_agt.groupby("year")[["energy", "irr_depth"]].sum()
+        df_sys["energy_irr_depth"] = dff["energy"] / dff["irr_depth"]
+
+        # Energy per irrigation volumen
+        dff = df_agt.groupby("year")[["energy", "irr_vol"]].sum()
+        df_sys["energy_irr_vol"] = dff["energy"] / dff["irr_vol"]
 
         df_sys = df_sys.round(4)
 
