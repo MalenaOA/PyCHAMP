@@ -6,6 +6,13 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import os
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+from statsmodels.tools.eval_measures import rmse
+from aquacrop.utils import prepare_weather, get_filepath
+import seaborn as sns
+import numpy as np
+import sklearn.metrics as metrics
 
 from ..components.aquifer import Aquifer
 from ..components.behavior import Behavior4SingleFieldAndWell
@@ -355,8 +362,8 @@ class SD6ModelAquacrop(mesa.Model):
 
         # Define the path to the CSV file
         working_directory = "D:\\Malena\\CHAMP\\PyCHAMP\\code_20240704\\PyCHAMP"
-        folder_name = "examples\\SD6 Model\\"
-        file_name = "default.csv"
+        folder_name = "Heterogeneity\\examples\\SD6 Model\\"
+        file_name = "corn_default.csv" #premade default csv for aquacrop -- for corn 
         file_path = os.path.join(working_directory, folder_name, file_name)
 
         print(f"CSV file path: {file_path}")  # Debugging: Print file path
@@ -387,6 +394,58 @@ class SD6ModelAquacrop(mesa.Model):
         # Save updated DataFrame back to the CSV file
         df_updated.to_csv(file_path, index=False)
         print(f"Data saved to CSV.")  # Debugging: Confirm data save
+
+        self.run_aquacrop(file_path)
+
+    def run_aquacrop(csv_file_path):
+
+        warnings.filterwarnings('ignore')
+
+        os.chdir('/Users/michellenguyen/Downloads/calibration_example 2')  # change working directory
+
+        wd = getcwd()
+
+        from src.soils import *
+        from src.calibration_old import *
+
+        # Input files
+        with open(wd + '/data/input_dict.pickle', 'rb') as input_data:
+            input_dict = pickle.load(input_data)
+
+        planting_date = pd.read_csv(wd + '/data/CropPlantingDate_GMD4_WNdlovu_072423.csv')
+        bias_correction = pd.read_csv(wd + '/data/CropBiasCorrectionParams_GMD4_Wndlovu_062424.csv')
+
+        # Use the CSV file produced by PyCHAMP
+        defaults = pd.read_csv(csv_file_path)  # default model params
+
+        irrig_crop = '1'  # code for irrigated corn
+        irrig_crop_dict = {k: v for (k, v) in input_dict.items() if irrig_crop in k}
+
+        calibration = list(irrig_crop_dict.items())
+        gridmet = pd.concat([sublist[1][0] for sublist in calibration])
+        et = pd.concat([sublist[1][1] for sublist in calibration])
+        soil_irrig = pd.concat(SoilCompart([sublist[1][2] for sublist in calibration]))
+
+        planting_date = planting_date[planting_date["Crop"] == 'Maize']
+        planting_date['pdate'] = pd.to_datetime(planting_date['pdate'], format='%Y-%m-%d')
+        planting_date['har'] = pd.to_datetime(planting_date['har'], format='%Y-%m-%d')
+        planting_date['late_har'] = pd.to_datetime(planting_date['late_har'], format='%Y-%m-%d')
+
+        planting_date['pdate'] = planting_date['pdate'].dt.strftime('%Y/%m/%d')
+        planting_date['har'] = planting_date['har'].dt.strftime('%Y/%m/%d')
+        planting_date['late_har'] = planting_date['late_har'].dt.strftime('%Y/%m/%d')
+
+        planting_date['canopy'] = 0.96 / 0.012494
+
+        gridmet_2009 = gridmet[(gridmet['Year'] == 2009) & (gridmet['crop_mn_codeyear'] == '1_Cheyenne')]
+
+        example_df = RunModelBiasCorrected(defaults, planting_date, gridmet_2009, soil_irrig, bias_correction, 4, 11)
+        print(example_df)
+
+        absolute_path = '/Users/michellenguyen/Downloads/example_df_full.csv'
+        example_df.to_csv(absolute_path, index=False)
+
+        return example_df
 
     def end(self):
         """Depose the Gurobi environment, ensuring that it is executed only when
