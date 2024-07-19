@@ -1,9 +1,0 @@
-smt1
-smt2
-ccx
-rtx
-kc
-wp
-hi
-smt3
-hipsveg
