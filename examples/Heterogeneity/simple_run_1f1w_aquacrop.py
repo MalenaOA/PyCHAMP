@@ -13,7 +13,8 @@ from py_champ.models.sd6_model_aquacrop import SD6ModelAquacrop
 #wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
 # Michelle Laptop
 wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
-
+# Michelle PC 
+#blah
 # Add the 'code' directory to sys.path if not already present
 if wd not in sys.path:
     sys.path.append(os.path.join(wd, "code"))
