@@ -263,6 +263,8 @@ class SD6ModelAquacrop(mesa.Model):
         if show_initialization:
             print(msg)
 
+        self.csv_path = "Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity/corn_default.csv"
+
     def step(self):
         """
         Advance the model by one step.
