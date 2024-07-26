@@ -1,0 +1,9 @@
+var,description,lb,ub,units
+ccx,maximum fractional canopy cover size,0.6,0.98,-
+rtx,maximum effective rooting depth (irrigated),1.62,1.98,m
+kc,crop coefficient when canopy is complete but prior to senescence,0.963,1.177,-
+wp,water productivity normalized for reference ET0 and CO2,30.33,37.07,g/m2
+hi,reference harvest index,0.405,0.495,-
+smt1,soil moisture target pre-anthesis,40,80,%
+smt2,soil moisture target post-anthesis,0,50,%
+smt3,soil moisture target post-anthesis,0,50,%

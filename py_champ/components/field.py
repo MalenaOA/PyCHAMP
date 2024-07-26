@@ -714,7 +714,7 @@ class Field_aquacrop(mesa.Agent):
         ----------
         settings : dict
             A dictionary containing settings for the field, including field area and initial conditions
-        """
+        """ 
         self.field_area = settings["field_area"]
         self.init = settings["init"]
         self.prec_aw_id = settings["prec_aw_id"]
@@ -756,6 +756,43 @@ class Field_aquacrop(mesa.Agent):
         crop = crop_options[np.argmax(i_crop[:, 0])]
         self.crop = crop
         self.i_crop = i_crop
+
+    def update_csv(self, irr_depth, crop_name, irrig_method, file_path):
+        max_irrseason = irr_depth.flatten().tolist()
+        crop_name = [self.crop]
+        irrig_method = [self.field_type]
+
+        if os.path.exists(file_path):
+            df_existing = pd.read_csv(file_path)
+            new_data = pd.DataFrame({
+                'max_irrseason': max_irrseason,
+                'crop_name': crop_name,
+                'irrig_method': irrig_method
+            })
+            df_updated = pd.concat([df_existing, new_data], ignore_index=True)
+        else:
+            df_updated = pd.DataFrame({
+                'max_irrseason': max_irrseason,
+                'crop_name': crop_name,
+                'irrig_method': irrig_method
+            })
+        df_updated.to_csv(file_path, index=False)
+        print(f"Data saved to CSV: {file_path}")
+
+    def run_aquacrop(self, file_path):
+        # Placeholder: replace with actual AquaCrop execution command
+        print(f"Running AquaCrop with CSV: {file_path}")
+        # Return dummy AquaCrop output for demonstration
+        return {
+            "bias_corrected_yield": 8.0,  # t/ha, for example
+            "bias_corrected_irrigation": 500.0  # mm, for example
+        }
+
+    def convert_units(self, yield_t_ha, irrigation_mm):
+        yield_bu = yield_t_ha * 36.744  # Example conversion, 1 t/ha ≈ 36.744 bu/ha
+        irrigation_m_ha = irrigation_mm * 0.1  # Example conversion, 1 mm ≈ 0.1 m/ha
+        return yield_bu, irrigation_m_ha
+
 
     def step(self, irr_depth, i_crop, prec_aw: dict) -> tuple:
         """
@@ -822,13 +859,16 @@ class Field_aquacrop(mesa.Agent):
         self.yield_rate_per_field = avg_y_y
         self.irr_vol_per_field = irr_vol     # m-ha
 
-        # Prepare data for CSV output
-        max_irrseason = irr_depth.flatten().tolist()
-        crop_name = [self.crop]  # single crop, no need for flatten
-        irrig_method = [self.field_type]  # assuming this is for irrigation method
-
         # from aqucrop we need bias corrected yield and irrgation, year, crop type. For double checking, irrgation, year and crop type
         # irr_vol = bias corrected irrgation? if not we'll see
         # crop type = crop?
+    
+        self.update_csv(irr_depth, crop_name, irrig_method, file_path)
 
-        return y, avg_y_y, irr_vol, self.crop, max_irrseason, crop_name, irrig_method
+        aquacrop_output = self.run_aquacrop(file_path)
+        bias_corrected_yield, bias_corrected_irrigation = self.convert_units(
+            aquacrop_output["bias_corrected_yield"],
+            aquacrop_output["bias_corrected_irrigation"]
+        )
+
+        return y, avg_y_y, irr_vol, self.crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth
