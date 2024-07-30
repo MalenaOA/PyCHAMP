@@ -1,6 +1,3 @@
-"""
-Malena
-"""
 from copy import deepcopy
 
 import gurobipy as gp

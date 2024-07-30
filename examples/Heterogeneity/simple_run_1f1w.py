@@ -1,7 +1,3 @@
-"""
-Malena GITHUB
-"""
-
 import os
 import sys
 import dill
@@ -130,9 +126,9 @@ else:
     output_dir = os.path.join(wd, "Outputs")
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    df_sys_filename = os.path.join(output_dir, "df_sys_20240727_235528.csv")
-    df_agt_filename = os.path.join(output_dir, "df_agt_20240727_235528.csv")
-    metrices_filename = os.path.join(output_dir, "metrices_20240727_235528.csv")
+    df_sys_filename = os.path.join(output_dir, "df_sys_20240730_005840.csv")
+    df_agt_filename = os.path.join(output_dir, "df_agt_20240730_005840.csv")
+    metrices_filename = os.path.join(output_dir, "metrices_20240730_005840.csv")
 
     df_sys = pd.read_csv(os.path.join(output_dir, df_sys_filename), index_col=0)
     df_agt = pd.read_csv(os.path.join(output_dir, df_agt_filename), index_col=0)
