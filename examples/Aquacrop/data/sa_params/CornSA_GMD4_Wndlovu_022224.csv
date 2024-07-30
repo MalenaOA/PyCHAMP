@@ -1,0 +1,13 @@
+var,description,lb,ub,units
+ccx,maximum fractional canopy cover size,0.85,0.99,-
+rtx,maximum effective rooting depth (irrigated),1.2,2,m
+rtexup,maximum water extraction at the top of the root zone,0.02,0.03,m3/m3/day
+rtexlw,maximum water extraction at the bottom of the root zone,0,0.01,m3/m3/day
+kc,crop coefficient when canopy is complete but prior to senescence,1,1.1,-
+wp,water productivity normalized for reference ET0 and CO2,30,35,g/m2
+hi,reference harvest index,0.45,0.55,-
+hipsveg,coefficient describing positive impact of restricted vegetative growth during yield formation on HI,0.5,10,-
+hingsto,coefficient describing negative impact of stomatal closure growth during yield formation on HI,1,20,-
+smt1,soil moisture target pre-anthesis,40,80,%
+smt2,soil moisture target post-anthesis,0,50,%
+smt3,soil moisture target post-anthesis,0,50,%
