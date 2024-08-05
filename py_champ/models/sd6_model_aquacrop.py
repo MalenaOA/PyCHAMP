@@ -8,7 +8,7 @@ from tqdm import tqdm
 import os
 
 from ..components.aquifer import Aquifer
-from ..components.behavior import Behavior4SingleFieldAndWell
+from ..components.behavior import Behavior4Aquacrop
 # from ..components.field import Field4SingleFieldAndWell
 from ..components.field import Field_aquacrop
 from ..components.finance import Finance4SingleFieldAndWell
@@ -60,7 +60,7 @@ class SD6ModelAquacrop(mesa.Model):
                 "field": Field_aquacrop,
                 "well": Well4SingleFieldAndWell,
                 "finance": Finance4SingleFieldAndWell,
-                "behavior": Behavior4SingleFieldAndWell,
+                "behavior": Behavior4Aquacrop,
             }
         self.components = components
         self.optimization_class = optimization_class
@@ -263,7 +263,7 @@ class SD6ModelAquacrop(mesa.Model):
         if show_initialization:
             print(msg)
 
-        self.csv_path = "Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity/corn_default.csv"
+        self.csv_path = "Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/data/corn_default.csv"
 
     def step(self):
         """
