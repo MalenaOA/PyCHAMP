@@ -1,4 +1,3 @@
-# %%
 import os
 import sys
 import dill
@@ -7,18 +6,13 @@ import seaborn
 import datetime
 
 from py_champ.models.sd6_model_1f1w import SD6Model4SingleFieldAndWell
-
-from plot_1f1w import (plot_GW_st,
-                       plot_withdrawal,
-                       plot_crop_ratio,
-                       plot_rainfed,
-                       plot_aquifer,
-                       plot_field,
-                       plot_well,
-                       plot_finance,
-                       plot_behavior)
+from plot_validation import plot_validation
+from plot_results import plot_results
 
 # Define the working directory
+def get_wd():
+    return os.path.dirname(os.path.abspath(__file__))
+wd = get_wd()
 
 # ADD FUNCTION TO GET ABSOLUTE PATH AND DEFINED IT!!
 
@@ -30,12 +24,13 @@ from plot_1f1w import (plot_GW_st,
 wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
 
 # Set this to True if you want to load from Outputs directory
-load_from_outputs = False
+#load_from_outputs = False
+# Load from Outputs directory
+load_from_outputs = True
 
 # Add file paths dynamically
 def add_file(file_name, alias):
     setattr(paths, alias, os.path.join(wd, file_name))
-
 paths = type("Paths", (), {})
 
 # Add inputs files
@@ -50,9 +45,8 @@ prec_avg = pd.read_csv(paths.prec_avg, index_col=[0]).iloc[1:, :]
 sd6_data = pd.read_csv(paths.sd6_data, index_col=["year"])
 crop_options = ["corn", "others"]
 
-# Run the model if not loading from outputs
+# Run the model
 if not load_from_outputs:
-    # Load inputs
     with open(paths.input_pkl, "rb") as f:
         (
             aquifers_dict,
@@ -131,7 +125,7 @@ if not load_from_outputs:
 
     data = sd6_data
     df_sys, df_agt = m.get_dfs(m)
-    metrices = m.get_metrices(df_sys, data) # same length
+    metrices = m.get_metrices(df_sys, data)
 
     # Save df_sys and df_agt as CSV files
     df_sys.to_csv(os.path.join(output_dir, f"df_sys_{timestamp}.csv"), index=True)
@@ -143,9 +137,9 @@ else:
     output_dir = os.path.join(wd, "Outputs")
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    df_sys_filename = os.path.join(output_dir, "df_sys_20240718_204825.csv")
-    df_agt_filename = os.path.join(output_dir, "df_agt_20240718_204825.csv")
-    metrices_filename = os.path.join(output_dir, "metrices_20240718_204825.csv")
+    df_sys_filename = os.path.join(output_dir, "df_sys_20240730_005840.csv")
+    df_agt_filename = os.path.join(output_dir, "df_agt_20240730_005840.csv")
+    metrices_filename = os.path.join(output_dir, "metrices_20240730_005840.csv")
 
     df_sys = pd.read_csv(os.path.join(output_dir, df_sys_filename), index_col=0)
     df_agt = pd.read_csv(os.path.join(output_dir, df_agt_filename), index_col=0)
@@ -158,67 +152,18 @@ else:
 # =============================================================================
 # Plot results
 # =============================================================================
-plot_GW_st(df_sys.reindex(data.index),
-             data,
-             metrices,
+plot_validation(df_sys.reindex(data.index),
+                data,
+                metrices,
+                prec_avg,
+                crop_options,
+                background=True,
+                savefig=os.path.join(output_dir, f"Validation_{timestamp}.png"),
+                combined=True)
+
+plot_results(df_sys.reindex(data.index),
              prec_avg,
              crop_options,
-             savefig=os.path.join(output_dir, f"GW_st_{timestamp}.png"))
-
-plot_withdrawal(df_sys.reindex(data.index),
-                 data,
-                 metrices,
-                 prec_avg,
-                 crop_options,
-                 savefig=os.path.join(output_dir, f"withdrawal_{timestamp}.png"))
-
-plot_crop_ratio(df_sys.reindex(data.index),
-                 data,
-                 metrices,
-                 prec_avg,
-                 crop_options,
-                 savefig=os.path.join(output_dir, f"crop_ratio_{timestamp}.png"))
-
-plot_rainfed(df_sys.reindex(data.index),
-                 data,
-                 metrices,
-                 prec_avg,
-                 crop_options,
-                 savefig=os.path.join(output_dir, f"rainfed_{timestamp}.png"))
-
-plot_aquifer(df_sys.reindex(data.index),
-                 data,
-                 metrices,
-                 prec_avg,
-                 crop_options,
-                 savefig=os.path.join(output_dir, f"aquifer_{timestamp}.png"))
-
-plot_field(df_sys.reindex(data.index),
-                 data,
-                 metrices,
-                 prec_avg,
-                 crop_options,
-                 savefig=os.path.join(output_dir, f"field_{timestamp}.png"))
-
-
-# FIX PLOTS BELOW
-plot_well(df_sys.reindex(data.index),
-                 data,
-                 metrices,
-                 prec_avg,
-                 crop_options,
-                 savefig=os.path.join(output_dir, f"well_{timestamp}.png"))
-
-plot_finance(df_sys.reindex(data.index),
-                 data,
-                 metrices,
-                 prec_avg,
-                 crop_options,
-                 savefig=os.path.join(output_dir, f"finance_{timestamp}.png"))
-
-plot_behavior(df_sys.reindex(data.index),
-                 data,
-                 metrices,
-                 prec_avg,
-                 crop_options,
-                 savefig=os.path.join(output_dir, f"behavior_{timestamp}.png"))
+             background=True,
+             savefig=os.path.join(output_dir, f"Results_{timestamp}.png"),
+             combined=True)
