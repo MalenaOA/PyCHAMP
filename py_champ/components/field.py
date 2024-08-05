@@ -758,9 +758,14 @@ class Field_aquacrop(mesa.Agent):
         self.i_crop = i_crop
 
     def update_csv(self, irr_depth, crop_name, irrig_method, file_path):
-        max_irrseason = irr_depth.flatten().tolist()
-        crop_name = [self.crop]
-        irrig_method = [self.field_type]
+        
+        max_irrseason = [irr_depth]
+        crop_name = [crop_name]
+        irrig_method = [irrig_method]
+
+        print(max_irrseason, "done")
+        print(crop_name, "done")
+        print(irrig_method, "done")
 
         if os.path.exists(file_path):
             df_existing = pd.read_csv(file_path)
@@ -794,7 +799,7 @@ class Field_aquacrop(mesa.Agent):
         return yield_bu, irrigation_m_ha
 
 
-    def step(self, irr_depth, i_crop, prec_aw: dict) -> tuple:
+    def step(self, irr_depth, i_crop, prec_aw: dict, file_path: str) -> tuple:
         """
         Perform a single step of field operation, preparing data for coupling with Aquacrop
 
@@ -859,9 +864,18 @@ class Field_aquacrop(mesa.Agent):
         self.yield_rate_per_field = avg_y_y
         self.irr_vol_per_field = irr_vol     # m-ha
 
+        crop_name = self.crop
+        irrig_method = self.field_type
+
+
         # from aqucrop we need bias corrected yield and irrgation, year, crop type. For double checking, irrgation, year and crop type
         # irr_vol = bias corrected irrgation? if not we'll see
         # crop type = crop?
+
+        if len(irr_depth.flatten()) > 1:
+            irr_depth = irr_depth.flatten()[1]
+        else:
+            irr_depth = irr_depth.flatten()[0]
     
         self.update_csv(irr_depth, crop_name, irrig_method, file_path)
 
