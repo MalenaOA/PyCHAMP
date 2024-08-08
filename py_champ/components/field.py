@@ -761,7 +761,7 @@ class Field_aquacrop(mesa.Agent):
         
         max_irrseason = [irr_depth]
         crop_name = [crop_name]
-        irrig_method = [irrig_method]
+        irrig_method = [1 if irrig_method == "optimize" else 0]
 
         print(max_irrseason, "done")
         print(crop_name, "done")
@@ -793,10 +793,20 @@ class Field_aquacrop(mesa.Agent):
             "bias_corrected_irrigation": 500.0  # mm, for example
         }
 
-    def convert_units(self, yield_t_ha, irrigation_mm):
-        yield_bu = yield_t_ha * 36.744  # Example conversion, 1 t/ha ≈ 36.744 bu/ha
-        irrigation_m_ha = irrigation_mm * 0.1  # Example conversion, 1 mm ≈ 0.1 m/ha
-        return yield_bu, irrigation_m_ha
+    def convert_units_to_aquacrop(self, irr_depth):
+        #AQUACROP
+        irr_depth_mm = irr_depth * 10 #mm
+
+        return irr_depth_mm
+    
+    def convert_units_to_pychamp(self, y_tons, irr_depth_mm):
+
+        #PYCHAMP
+        y_bu = y_tons / .0254 #1e4 bu
+        irr_depth_cm = irr_depth_mm / 10 #cm 
+        # yield_bu = yield_t_ha * 39.368  # Example conversion, 1 t/ha ≈ 39.368 bu/ha
+        # irrigation_m_ha = irrigation_cm * 0.1  # Example conversion, 1 mm ≈ 0.1 m/ha
+        return y_bu, irr_depth_cm
 
 
     def step(self, irr_depth, i_crop, prec_aw: dict, file_path: str) -> tuple:
@@ -836,6 +846,7 @@ class Field_aquacrop(mesa.Agent):
         crop_options = self.model.crop_options
 
         irr_depth = irr_depth.copy()[:, [0]]
+        #check irr_depth = irr_depth_cm
         prec_aw_ = np.ones(irr_depth.shape)
         for ci, crop in enumerate(crop_options):
             prec_aw_[ci, :] = prec_aw[crop]
@@ -867,22 +878,38 @@ class Field_aquacrop(mesa.Agent):
         crop_name = self.crop
         irrig_method = self.field_type
 
+        # Check the crop type and print or run AquaCrop accordingly
+        if self.crop == "corn":
+            print("Running AquaCrop")
+            # Here would be the logic or function call to run AquaCrop
+            # Convert irrigation depth to AquaCrop units
+            irr_depth_mm = self.convert_units_to_aquacrop(irr_depth)
+
+            if len(irr_depth_mm.flatten()) > 1:
+                irr_depth_mm = irr_depth_mm.flatten()[1]
+            else:
+                irr_depth_mm = irr_depth_mm.flatten()[0]
+    
+            self.update_csv(irr_depth_mm, crop_name, irrig_method, file_path)
+
+            aquacrop_output = self.run_aquacrop(file_path)
+
+            # Convert AquaCrop output to PyCHAMP units
+            bias_corrected_yield, bias_corrected_irrigation = self.convert_units_to_pychamp(
+                aquacrop_output["bias_corrected_yield"],
+                aquacrop_output["bias_corrected_irrigation"]
+            )
+        else:
+            print(f"Running normal operations for {self.crop}")
+            bias_corrected_yield = None
+            bias_corrected_irrigation = None
+
+
 
         # from aqucrop we need bias corrected yield and irrgation, year, crop type. For double checking, irrgation, year and crop type
         # irr_vol = bias corrected irrgation? if not we'll see
         # crop type = crop?
 
-        if len(irr_depth.flatten()) > 1:
-            irr_depth = irr_depth.flatten()[1]
-        else:
-            irr_depth = irr_depth.flatten()[0]
-    
-        self.update_csv(irr_depth, crop_name, irrig_method, file_path)
-
-        aquacrop_output = self.run_aquacrop(file_path)
-        bias_corrected_yield, bias_corrected_irrigation = self.convert_units(
-            aquacrop_output["bias_corrected_yield"],
-            aquacrop_output["bias_corrected_irrigation"]
-        )
+        
 
         return y, avg_y_y, irr_vol, self.crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth

@@ -350,11 +350,28 @@ class SD6ModelAquacrop(mesa.Model):
             self.running = False
             print("Done!", f"\t{self.time_recorder.get_elapsed_time()}")
 
-        # Looping logic
+        # # Looping logic
+        # for field_id, field in self.fields.items():
+        #     irr_depth, crop, prec_aw = field.get_data_for_aquacrop()
+        #     for i in range(self.total_steps):
+        #         y, avg_y_y, irr_vol, crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth = field.step(irr_depth, field.i_crop, prec_aw, self.csv_path)
+        #         print(f"Step {i+1}/{self.total_steps}: Yield={y}, Irrigation Volume={irr_vol}, Bias-corrected Yield={bias_corrected_yield}, Bias-corrected Irrigation={bias_corrected_irrigation}")
+        #         field.update_field_data(bias_corrected_yield, bias_corrected_irrigation)
+
+# Looping logic
+        
         for field_id, field in self.fields.items():
             irr_depth, crop, prec_aw = field.get_data_for_aquacrop()
             for i in range(self.total_steps):
-                y, avg_y_y, irr_vol, crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth = field.step(irr_depth, field.i_crop, prec_aw, self.csv_path)
+                if crop == "corn":
+                    print("Running AquaCrop simulation for corn...")
+                    # Here you would call AquaCrop simulation
+                    y, avg_y_y, irr_vol, crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth = field.step(irr_depth, field.i_crop, prec_aw, self.csv_path)
+                else:
+                    print(f"Running default simulation for {crop}...")
+                    # Here you would run the default simulation logic
+                    y, avg_y_y, irr_vol, crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth = field.step(irr_depth, field.i_crop, prec_aw, self.csv_path)
+                
                 print(f"Step {i+1}/{self.total_steps}: Yield={y}, Irrigation Volume={irr_vol}, Bias-corrected Yield={bias_corrected_yield}, Bias-corrected Irrigation={bias_corrected_irrigation}")
                 field.update_field_data(bias_corrected_yield, bias_corrected_irrigation)
 
@@ -369,7 +386,7 @@ class SD6ModelAquacrop(mesa.Model):
     def get_dfs(model):
         df = model.datacollector.get_agent_vars_dataframe().reset_index()
         df["year"] = df["Step"] + model.init_year
-        df.index = df["year"]
+        df.index = df["year"] #(-)
 
         # =============================================================================
         # df_agt
@@ -381,14 +398,13 @@ class SD6ModelAquacrop(mesa.Model):
         df_fields["field_type"] = ""
         df_fields.loc[df_fields["irr_vol"] == 0, "field_type"] = "rainfed"
         df_fields.loc[df_fields["irr_vol"] > 0, "field_type"] = "irrigated"
-        df_fields["irr_depth"] = (
-            df_fields["irr_vol"] / df_fields["field_area"] * 100
-        )  # cm
+        df_fields["irr_depth"] = (df_fields["irr_vol"] / df_fields["field_area"] * 100)  # cm
+        df_fields["irr_vol_m3"] = df_fields["irr_vol"]/100 #m3
         df_fields["fid"] = df_fields["AgentID"]
 
         df_wells = df[df["agt_type"] == "Well"].dropna(axis=1, how="all")
         df_wells["wid"] = df_wells["AgentID"]
-        
+
         df_agt = pd.concat(
             [
                 df_behaviors[
@@ -412,6 +428,7 @@ class SD6ModelAquacrop(mesa.Model):
                         "field_type",
                         "crop",
                         "irr_vol",
+                        "irr_vol_m3",
                         "yield",
                         "yield_rate",
                         "irr_depth",
@@ -419,11 +436,15 @@ class SD6ModelAquacrop(mesa.Model):
                         "field_area",
                     ]
                 ],
-                df_wells[["wid", "water_depth", "withdrawal", "energy"]],
+                df_wells[["wid",
+                          "water_depth",
+                          "withdrawal",
+                          "energy"]],
             ],
             axis=1,
         )
         df_agt["yield"] = df_agt["yield"].apply(sum).apply(sum)
+
         df_agt = df_agt.round(8)
 
         # =============================================================================
@@ -431,10 +452,12 @@ class SD6ModelAquacrop(mesa.Model):
         # =============================================================================
         df_sys = pd.DataFrame()
 
-        # Aquifer
+        # Saturated Thickness
         df_aquifers = df[df["agt_type"] == "Aquifer"].dropna(axis=1, how="all")
         df_sys["GW_st"] = df_aquifers["GW_st"]
-        df_sys["withdrawal"] = df_aquifers["withdrawal"]
+
+        # Water use
+        df_sys["withdrawal"] = df_aquifers["withdrawal"]/100
 
         # Field_Type ratio
         dff = (
@@ -448,11 +471,16 @@ class SD6ModelAquacrop(mesa.Model):
             [all_years, all_field_types], names=["year", "field_type"]
         )
         dff = dff.reindex(new_index).fillna(0)
+
         df_sys["rainfed"] = (
-            dff.xs("rainfed", level="field_type") / dff.groupby("year").sum()
+                dff.xs("rainfed", level="field_type") / dff.groupby("year").sum()
         )
 
-        # Crop type ratio
+        df_sys["irrigated"] = (
+                dff.xs("irrigated", level="field_type") / dff.groupby("year").sum()
+        )
+
+        # Crop ratio
         dff = df_agt[["crop", "field_area"]].groupby([df_agt.index, "crop"]).sum()
         all_years = dff.index.get_level_values("year").unique()
         all_crop_types = model.crop_options
@@ -464,7 +492,35 @@ class SD6ModelAquacrop(mesa.Model):
         for c in all_crop_types:
             df_sys[f"{c}"] = dff.xs(c, level="crop") / total
 
-        # Behavioral agent state ratio
+        # Yield per crop
+        dff = df_agt[["crop", "yield"]].groupby([df_agt.index, "crop"]).sum()
+        all_years = dff.index.get_level_values("year").unique()
+        all_crop_types = model.crop_options
+        new_index = pd.MultiIndex.from_product(
+            [all_years, all_crop_types], names=["year", "crop"]
+        )
+        dff = dff.reindex(new_index).fillna(0)
+        for c in all_crop_types:
+            df_sys[f"{c}_yield"] = dff.xs(c, level="crop")
+
+        # Water use per crop
+        dff = df_agt[["crop", "irr_vol_m3"]].groupby([df_agt.index, "crop"]).sum()
+        all_years = dff.index.get_level_values("year").unique()
+        all_crop_types = model.crop_options
+        new_index = pd.MultiIndex.from_product(
+            [all_years, all_crop_types], names=["year", "crop"]
+        )
+        dff = dff.reindex(new_index).fillna(0)
+        for c in all_crop_types:
+            df_sys[f"{c}_irr_vol"] = dff.xs(c, level="crop")
+
+        # Total irrigation volume
+        df_sys["total_irr_vol"] = df_agt.groupby("year")["irr_vol_m3"].sum()
+
+        # Total irrigation depth
+        df_sys["total_irr_depth"] = df_agt.groupby("year")["irr_depth"].sum()
+
+        # CONSUMAT state ratio
         dff = df_behaviors[["state"]].groupby([df_behaviors.index, "state"]).size()
         all_years = dff.index.get_level_values("year").unique()
         all_states = ["Imitation", "Social comparison", "Repetition", "Deliberation"]
@@ -472,18 +528,43 @@ class SD6ModelAquacrop(mesa.Model):
             [all_years, all_states], names=["year", "state"]
         )
         dff = dff.reindex(new_index).fillna(0)
+
         for s in all_states:
             df_sys[f"{s}"] = dff.xs(s, level="state")
-        df_sys = df_sys.round(4)
+
+        # Total profit
+        df_sys["total_profit"] = df_agt.groupby("year")["profit"].sum()
+
+        # Profit per crop
+        dff = df_agt[["crop", "profit"]].groupby([df_agt.index, "crop"]).sum()
+        all_years = dff.index.get_level_values("year").unique()
+        all_crop_types = model.crop_options
+        new_index = pd.MultiIndex.from_product(
+            [all_years, all_crop_types], names=["year", "crop"]
+        )
+        dff = dff.reindex(new_index).fillna(0)
+        for c in all_crop_types:
+            df_sys[f"{c}_profit"] = dff.xs(c, level="crop")
+
+        # Profit per irrigation depth
+        df_sys["profit_irr_depth"] = df_sys["total_profit"] / df_sys["total_irr_depth"]
+
+        # Total energy
+        df_sys["total_energy"] = df_agt.groupby("year")["energy"].sum()
+
+        # Energy per irrigation depth
+        df_sys["energy_irr_depth"] = df_sys["total_energy"] / df_sys["total_irr_depth"]
+
+        # df_sys = df_sys.round(4)
 
         return df_sys, df_agt
+    
 
     @staticmethod
-    def get_metrices(
-        df_sys,
-        data,
-        targets=None,
-        indicators_list=None,
+    def get_metrices(df_sys,
+                     data,
+                     targets=None,
+                     indicators_list=None,
     ):
         """
         Calculate various metrics based on system-level data and specified targets.
@@ -504,12 +585,18 @@ class SD6ModelAquacrop(mesa.Model):
         pd.DataFrame
             A dataframe containing calculated metrics for each target.
 
-        This method is useful for evaluating the performance of the model against 
+        This method is useful for evaluating the performance of the model against
         real-world data or specific objectives, providing insights into the accuracy
         and reliability of the simulation.
         """
         if targets is None:
-            targets = ["GW_st", "withdrawal", "rainfed", "corn", "others"]
+            targets = [
+                "GW_st",
+                "withdrawal",
+                "rainfed",
+                "corn",
+                "others"
+            ]
         if indicators_list is None:
             indicators_list = ["r", "rmse", "kge"]
         indicators = Indicator()
@@ -525,3 +612,4 @@ class SD6ModelAquacrop(mesa.Model):
             )
         metrices = pd.concat(metrices)
         return metrices
+        
