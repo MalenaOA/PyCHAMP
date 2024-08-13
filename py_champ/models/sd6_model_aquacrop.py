@@ -360,7 +360,6 @@ class SD6ModelAquacrop(mesa.Model):
 
 # Looping logic
         for field_id, field in self.fields.items():
-    # Assume irr_depth, i_crop, prec_aw are prepared before this call
             for i in range(self.total_steps):
         # Run the step method, which already handles whether to use AquaCrop or the default simulation
                 y, avg_y_y, irr_vol, crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth = field.step(

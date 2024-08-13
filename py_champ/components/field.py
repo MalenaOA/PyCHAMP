@@ -705,6 +705,7 @@ class Field_aquacrop(mesa.Agent):
         self.irr_vol = None
         self.yield_rate_per_field = None    # Averaged value across a field
         self.irr_vol_per_field = None       # Averaged value across a field
+        self.irr_depth = None
 
     def load_settings(self, settings: dict):
         """
@@ -835,6 +836,7 @@ class Field_aquacrop(mesa.Agent):
         This method prepares data for the Aquacrop model by saving relevant information to a CSV file, including the maximum irrigation season, crop name, and irrigation method.
         """
         self.t += 1
+        self.irr_depth = irr_depth
 
         # Calculate yield
         a = self.a
