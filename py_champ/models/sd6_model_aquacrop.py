@@ -263,7 +263,7 @@ class SD6ModelAquacrop(mesa.Model):
         if show_initialization:
             print(msg)
 
-        self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/data/corn_default.csv"
+        self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default.csv"
 
     def step(self):
         """
@@ -350,19 +350,12 @@ class SD6ModelAquacrop(mesa.Model):
             self.running = False
             print("Done!", f"\t{self.time_recorder.get_elapsed_time()}")
 
-        # # Looping logic
-        # for field_id, field in self.fields.items():
-        #     irr_depth, crop, prec_aw = field.get_data_for_aquacrop()
-        #     for i in range(self.total_steps):
-        #         y, avg_y_y, irr_vol, crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth = field.step(irr_depth, field.i_crop, prec_aw, self.csv_path)
-        #         print(f"Step {i+1}/{self.total_steps}: Yield={y}, Irrigation Volume={irr_vol}, Bias-corrected Yield={bias_corrected_yield}, Bias-corrected Irrigation={bias_corrected_irrigation}")
-        #         field.update_field_data(bias_corrected_yield, bias_corrected_irrigation)
 
 # Looping logic
         for field_id, field in self.fields.items():
             for i in range(self.total_steps):
         # Run the step method, which already handles whether to use AquaCrop or the default simulation
-                y, avg_y_y, irr_vol, crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth = field.step(
+                y, avg_y_y, irr_vol, crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth, prec_aw = field.step(
                 field.irr_depth, 
                 field.i_crop, 
                 field.prec_aw, 
@@ -373,7 +366,7 @@ class SD6ModelAquacrop(mesa.Model):
             print(f"Step {i+1}/{self.total_steps}: Crop={crop}, Yield={y}, Irrigation Volume={irr_vol}, Bias-corrected Yield={bias_corrected_yield}, Bias-corrected Irrigation={bias_corrected_irrigation}")
         
         # Update field data if necessary
-        field.update_field_data(bias_corrected_yield, bias_corrected_irrigation)
+        #field.update_field_data(bias_corrected_yield, bias_corrected_irrigation)
 
 
     

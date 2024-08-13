@@ -706,6 +706,7 @@ class Field_aquacrop(mesa.Agent):
         self.yield_rate_per_field = None    # Averaged value across a field
         self.irr_vol_per_field = None       # Averaged value across a field
         self.irr_depth = None
+        self.prec_aw = None
 
     def load_settings(self, settings: dict):
         """
@@ -837,6 +838,7 @@ class Field_aquacrop(mesa.Agent):
         """
         self.t += 1
         self.irr_depth = irr_depth
+        self.prec_aw = prec_aw
 
         # Calculate yield
         a = self.a

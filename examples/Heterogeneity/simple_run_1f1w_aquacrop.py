@@ -14,16 +14,6 @@ def get_wd():
     return os.path.dirname(os.path.abspath(__file__))
 wd = get_wd()
 
-
-# Malena PC ->
-#wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
-# Malena Laptop ->
-#wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
-# Michelle Laptop
-wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
-# Michelle PC 
-#blah
-# Add the 'code' directory to sys.path if not already present
 load_from_outputs = False
 
 # Add file paths dynamically
