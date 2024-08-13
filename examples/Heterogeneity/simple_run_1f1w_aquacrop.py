@@ -24,7 +24,7 @@ wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
 # Michelle PC 
 #blah
 # Add the 'code' directory to sys.path if not already present
-load_from_outputs = True
+load_from_outputs = False
 
 # Add file paths dynamically
 def add_file(file_name, alias):
@@ -150,18 +150,18 @@ else:
 # =============================================================================
 # Plot results
 # =============================================================================
-plot_validation(df_sys.reindex(data.index),
-                data,
-                metrices,
-                prec_avg,
-                crop_options,
-                background=True,
-                savefig=os.path.join(output_dir, f"Validation_{timestamp}.png"),
-                combined=True)
+# plot_validation(df_sys.reindex(data.index),
+#                 data,
+#                 metrices,
+#                 prec_avg,
+#                 crop_options,
+#                 background=True,
+#                 savefig=os.path.join(output_dir, f"Validation_{timestamp}.png"),
+#                 combined=True)
 
-plot_results(df_sys.reindex(data.index),
-             prec_avg,
-             crop_options,
-             background=True,
-             savefig=os.path.join(output_dir, f"Results_{timestamp}.png"),
-             combined=True)
+# plot_results(df_sys.reindex(data.index),
+#              prec_avg,
+#              crop_options,
+#              background=True,
+#              savefig=os.path.join(output_dir, f"Results_{timestamp}.png"),
+#              combined=True)

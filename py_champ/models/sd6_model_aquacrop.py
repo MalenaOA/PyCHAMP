@@ -263,7 +263,7 @@ class SD6ModelAquacrop(mesa.Model):
         if show_initialization:
             print(msg)
 
-        self.csv_path = "Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/data/corn_default.csv"
+        self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/data/corn_default.csv"
 
     def step(self):
         """

@@ -757,9 +757,9 @@ class Field_aquacrop(mesa.Agent):
         self.crop = crop
         self.i_crop = i_crop
 
-    def update_csv(self, irr_depth, crop_name, irrig_method, file_path):
+    def update_csv(self, irr_depth_mm, crop_name, irrig_method, file_path):
         
-        max_irrseason = [irr_depth]
+        max_irrseason = [irr_depth_mm]
         crop_name = [crop_name]
         irrig_method = [1 if irrig_method == "optimize" else 0]
 
@@ -886,7 +886,7 @@ class Field_aquacrop(mesa.Agent):
             irr_depth_mm = self.convert_units_to_aquacrop(irr_depth)
 
             if len(irr_depth_mm.flatten()) > 1:
-                irr_depth_mm = irr_depth_mm.flatten()[1]
+                irr_depth_mm = irr_depth_mm.flatten()[0]
             else:
                 irr_depth_mm = irr_depth_mm.flatten()[0]
     
@@ -912,4 +912,4 @@ class Field_aquacrop(mesa.Agent):
 
         
 
-        return y, avg_y_y, irr_vol, self.crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth
+        return y, avg_y_y, irr_vol, self.crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth, prec_aw
