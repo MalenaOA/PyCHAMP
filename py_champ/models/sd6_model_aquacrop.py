@@ -263,7 +263,7 @@ class SD6ModelAquacrop(mesa.Model):
         if show_initialization:
             print(msg)
 
-        self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default.csv"
+        self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default_new.csv"
 
     def step(self):
         """
@@ -363,11 +363,6 @@ class SD6ModelAquacrop(mesa.Model):
                     farmer_id=field_id,
                 )
 
-                # Print the results for this step
-                print(
-                    f"Step {i + 1}/{self.total_steps}: Crop={crop}, Yield={y}, "
-                    f"Irrigation Volume={irr_vol}, Year={current_year}, Farmer ID={field_id}"
-                )
     
     def end(self):
         """Depose the Gurobi environment, ensuring that it is executed only when

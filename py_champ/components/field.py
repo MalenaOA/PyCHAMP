@@ -760,7 +760,7 @@ class Field_aquacrop(mesa.Agent):
         self.crop = crop
         self.i_crop = i_crop
 
-    def update_csv(self, year, irr_depth_mm, crop_name, irrig_method, yield_value, file_path):
+    def update_csv(self, irr_depth_mm, crop_name, irrig_method, file_path, year, farmer_id, yield_value):
         """
         Update the CSV file with the given data.
 
@@ -802,7 +802,6 @@ class Field_aquacrop(mesa.Agent):
             df_updated = new_data
 
         df_updated.to_csv(file_path, index=False)
-        print(f"Data saved to CSV: {file_path}")
 
 
     def convert_units_to_aquacrop(self, irr_depth):
@@ -821,7 +820,7 @@ class Field_aquacrop(mesa.Agent):
         return y_bu, irr_depth_cm
 
 
-    def step(self, irr_depth, i_crop, prec_aw: dict, file_path: str, year:int) -> tuple:
+    def step(self, irr_depth, i_crop, prec_aw: dict, file_path: str, year=None, farmer_id=None) -> tuple:
         """
         Perform a single step of field operation, preparing data for coupling with Aquacrop
 
@@ -898,10 +897,7 @@ class Field_aquacrop(mesa.Agent):
         irr_depth_mm = irr_depth_mm.flatten()[0]
 
         # Update the CSV file
-        self.update_csv(year, irr_depth_mm, crop_name, irrig_method, avg_y_y, file_path)
+        self.update_csv(irr_depth_mm, crop_name, irrig_method, file_path, year, farmer_id, y)
 
         return y, avg_y_y, irr_vol, self.crop, irr_depth, prec_aw
        
-        # from aqucrop we need bias corrected yield and irrgation, year, crop type. For double checking, irrgation, year and crop type
-        # irr_vol = bias corrected irrgation? if not we'll see
-        # crop type = crop?
