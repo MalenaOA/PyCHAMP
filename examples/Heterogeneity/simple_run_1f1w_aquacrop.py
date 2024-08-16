@@ -8,12 +8,13 @@ import datetime
 from py_champ.models.sd6_model_aquacrop import SD6ModelAquacrop
 from plot_validation import plot_validation
 from plot_results import plot_results
-# Define the working directory
 
+# Define the working directory
 def get_wd():
     return os.path.dirname(os.path.abspath(__file__))
 wd = get_wd()
 
+# Loading previous results for plotting
 load_from_outputs = False
 
 # Add file paths dynamically
