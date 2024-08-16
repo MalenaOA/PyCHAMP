@@ -820,7 +820,7 @@ class Field_aquacrop(mesa.Agent):
         return y_bu, irr_depth_cm
 
 
-    def step(self, irr_depth, i_crop, prec_aw: dict, file_path: str, year=None, farmer_id=None) -> tuple:
+    def step(self, irr_depth, i_crop, prec_aw: dict, file_path=None, year=None, farmer_id=None) -> tuple:
         """
         Perform a single step of field operation, preparing data for coupling with Aquacrop
 
@@ -893,11 +893,17 @@ class Field_aquacrop(mesa.Agent):
 
 
         # Convert irrigation depth to AquaCrop units
-        irr_depth_mm = self.convert_units_to_aquacrop(irr_depth)
-        irr_depth_mm = irr_depth_mm.flatten()[0]
+        if self.crop == "corn": 
+            irr_depth_mm = irr_depth.flatten()[0]
+            irr_depth_mm = self.convert_units_to_aquacrop(irr_depth_mm)
+            yield_value = y.flatten()[0]
+        else: 
+            irr_depth_mm = irr_depth.flatten()[1]
+            irr_depth_mm = self.convert_units_to_aquacrop(irr_depth_mm)
+            yield_value = y.flatten()[1]
 
         # Update the CSV file
-        self.update_csv(irr_depth_mm, crop_name, irrig_method, file_path, year, farmer_id, y)
+        self.update_csv(irr_depth_mm, crop_name, irrig_method, file_path, year, farmer_id, yield_value)
 
         return y, avg_y_y, irr_vol, self.crop, irr_depth, prec_aw
        
