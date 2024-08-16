@@ -15,7 +15,7 @@ def get_wd():
 wd = get_wd()
 
 # Load from Outputs directory
-load_from_outputs = True
+load_from_outputs = False
 
 # Add file paths dynamically
 def add_file(file_name, alias):

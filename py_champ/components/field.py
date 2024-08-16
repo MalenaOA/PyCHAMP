@@ -803,7 +803,6 @@ class Field_aquacrop(mesa.Agent):
 
         df_updated.to_csv(file_path, index=False)
 
-
     def convert_units_to_aquacrop(self, irr_depth):
         #AQUACROP
         irr_depth_mm = irr_depth * 10 #mm
@@ -818,7 +817,6 @@ class Field_aquacrop(mesa.Agent):
         # yield_bu = yield_t_ha * 39.368  # Example conversion, 1 t/ha ≈ 39.368 bu/ha
         # irrigation_m_ha = irrigation_cm * 0.1  # Example conversion, 1 mm ≈ 0.1 m/ha
         return y_bu, irr_depth_cm
-
 
     def step(self, irr_depth, i_crop, prec_aw: dict, file_path=None, year=None, farmer_id=None) -> tuple:
         """
@@ -890,7 +888,6 @@ class Field_aquacrop(mesa.Agent):
 
         crop_name = self.crop
         irrig_method = self.field_type
-
 
         # Convert irrigation depth to AquaCrop units
         if self.crop == "corn": 

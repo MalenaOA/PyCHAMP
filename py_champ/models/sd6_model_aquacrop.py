@@ -263,7 +263,8 @@ class SD6ModelAquacrop(mesa.Model):
         if show_initialization:
             print(msg)
 
-        self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default_new.csv"
+        # self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default_new.csv"
+        self.csv_path = "D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Aquacrop\corn_default.csv"
 
     def step(self):
         """
@@ -318,8 +319,7 @@ class SD6ModelAquacrop(mesa.Model):
 
         # Simulation
         # Exercute step() of all behavioral agents in a for loop
-        # Note: fields, wells, and finance are simulation within a behavioral
-        # agent to better accomondate heterogeneity among behavioral agents
+        # Note: fields, wells, and finance are simulation within a behavioral agent to better accommodate heterogeneity among behavioral agents
         self.schedule.step(agt_type="Behavior")  # Parallelization makes it slower!
 
         ##### Nature Environment (aquifers)
