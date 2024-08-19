@@ -562,8 +562,16 @@ class SD6ModelAquacrop(mesa.Model):
             "rainfed": 0,
             })
 
+        # Create df_aqua_units based on df_aqua
+        df_aqua_units = df_aqua.copy()
 
-        return df_sys, df_agt, df_aqua
+        # Rename the column
+        df_aqua_units.rename(columns={"irr_depth_pychamp": "maxirr_season"}, inplace=True)
+
+        # Convert from cm to mm (1 cm = 10 mm)  
+        df_aqua_units["maxirr_season"] = df_aqua_units["maxirr_season"] * 10
+
+        return df_sys, df_agt, df_aqua, df_aqua_units
     
 
     @staticmethod
