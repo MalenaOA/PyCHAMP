@@ -6,7 +6,7 @@ def get_wd():
 wd = get_wd()
 
 # Load the CSV files
-pyaqua_df_full = pd.read_csv('/Users/michellenguyen/Downloads/pyaqua_df_full.csv')
+pyaqua_df_full = pd.read_csv(wd + '/Outputs/pyaqua_df_full.csv')
 df_aqua_units = pd.read_csv(wd + '/Outputs/df_aqua_units_20240818_222323.csv')
 
 # Convert bias corrected yield from t/ha to bu/ha
