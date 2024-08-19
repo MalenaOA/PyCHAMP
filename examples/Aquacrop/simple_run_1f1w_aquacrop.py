@@ -113,12 +113,13 @@ if not load_from_outputs:
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     data = sd6_data
-    df_sys, df_agt = m.get_dfs(m)
+    df_sys, df_agt, df_aqua = m.get_dfs(m)
     metrices = m.get_metrices(df_sys, data)
 
     # Save df_sys and df_agt as CSV files
     df_sys.to_csv(os.path.join(output_dir, f"df_sys_{timestamp}.csv"), index=True)
     df_agt.to_csv(os.path.join(output_dir, f"df_agt_{timestamp}.csv"), index=True)
+    df_aqua.to_csv(os.path.join(output_dir, f"df_aqua_{timestamp}.csv"), index=True)
     metrices.to_csv(os.path.join(output_dir, f"metrices_{timestamp}.csv"), index=True)
 
 else:

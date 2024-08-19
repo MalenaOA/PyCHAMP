@@ -263,8 +263,8 @@ class SD6ModelAquacrop(mesa.Model):
         if show_initialization:
             print(msg)
 
-        # self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default_new.csv"
-        self.csv_path = "D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Aquacrop\corn_default.csv"
+        self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default_new.csv"
+        #self.csv_path = "D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Aquacrop\corn_default.csv"
 
     def step(self):
         """
@@ -351,17 +351,17 @@ class SD6ModelAquacrop(mesa.Model):
             print("Done!", f"\t{self.time_recorder.get_elapsed_time()}")
 
 
-        for field_id, field in self.fields.items():
-            for i in range(self.total_steps):
-                # Run the step method for each field
-                y, avg_y_y, irr_vol, crop, irr_depth, prec_aw = field.step(
-                    field.irr_depth,
-                    field.i_crop,
-                    field.prec_aw,
-                    self.csv_path,
-                    year=current_year,
-                    farmer_id=field_id,
-                )
+        # for field_id, field in self.fields.items():
+        #     for i in range(self.total_steps):
+        #         # Run the step method for each field
+        #         y, avg_y_y, irr_vol, crop, irr_depth, prec_aw = field.step(
+        #             field.irr_depth,
+        #             field.i_crop,
+        #             field.prec_aw,
+        #             self.csv_path,
+        #             year=current_year,
+        #             farmer_id=field_id,
+        #         )
 
     
     def end(self):
@@ -545,7 +545,25 @@ class SD6ModelAquacrop(mesa.Model):
 
         # df_sys = df_sys.round(4)
 
-        return df_sys, df_agt
+        # =============================================================================
+        # df_aqua
+        # =============================================================================
+
+        # Extract the relevant columns from df_agt
+        df_aqua = df_agt[["bid", "irr_depth", "crop", "field_type", "yield"]].copy()
+
+        # Rename columns
+        df_aqua.rename(columns={"field_type": "irrig_method"}, inplace=True)
+        df_aqua.rename(columns={"irr_depth": "irr_depth_pychamp"}, inplace=True)
+        df_aqua.rename(columns={"yield": "yield_pychamp_bu"}, inplace=True)
+
+        df_aqua["irrig_method"] = df_aqua["irrig_method"].map({
+            "irrigated": 1,
+            "rainfed": 0,
+            })
+
+
+        return df_sys, df_agt, df_aqua
     
 
     @staticmethod

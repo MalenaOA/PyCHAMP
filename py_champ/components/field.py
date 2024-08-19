@@ -900,7 +900,7 @@ class Field_aquacrop(mesa.Agent):
             yield_value = y.flatten()[1]
 
         # Update the CSV file
-        self.update_csv(irr_depth_mm, crop_name, irrig_method, file_path, year, farmer_id, yield_value)
+        #self.update_csv(irr_depth_mm, crop_name, irrig_method, file_path, year, farmer_id, yield_value)
 
-        return y, avg_y_y, irr_vol, self.crop, irr_depth, prec_aw
+        return y, avg_y_y, irr_vol, self.crop, irr_depth, prec_aw 
        
