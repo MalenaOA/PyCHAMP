@@ -567,9 +567,11 @@ class SD6ModelAquacrop(mesa.Model):
 
         # Rename the column
         df_aqua_units.rename(columns={"irr_depth_pychamp": "maxirr_season"}, inplace=True)
+        #df_aqua.rename(columns={"yield": "yield_pychamp_ton"}, inplace=True)
 
         # Convert from cm to mm (1 cm = 10 mm)  
         df_aqua_units["maxirr_season"] = df_aqua_units["maxirr_season"] * 10
+        #df_aqua_units["yield_pychamp_ton"] = df_aqua_units["yield_pychamp_ton"] / .0254
 
         return df_sys, df_agt, df_aqua, df_aqua_units
     
