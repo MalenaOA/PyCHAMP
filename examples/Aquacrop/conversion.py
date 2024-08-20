@@ -10,7 +10,7 @@ pyaqua_df_full = pd.read_csv(wd + '/Outputs/pyaqua_df_full.csv')
 df_aqua_units = pd.read_csv(wd + '/Outputs/df_aqua_units_20240818_222323.csv')
 
 # Convert bias corrected yield from t/ha to bu/ha
-pyaqua_df_full['Bias Corrected Yield (bu/ha)'] = pyaqua_df_full['Bias Corrected Yield (t/ha)'] * 39.36 * 50 #use field area instead of 50
+pyaqua_df_full['Bias Corrected Yield (bu/ha)'] = (pyaqua_df_full['Bias Corrected Yield (t/ha)'] * 39.36 * 50) / 10000 #use field area instead of 50
 
 # Initialize an empty list to store rows before converting to DataFrame
 rows = []
