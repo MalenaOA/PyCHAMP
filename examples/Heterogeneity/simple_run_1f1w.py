@@ -21,12 +21,12 @@ wd = get_wd()
 # Malena Laptop ->
 #wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
 # Michelle Laptop 
-wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
+# wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
 
 # Set this to True if you want to load from Outputs directory
 #load_from_outputs = False
 # Load from Outputs directory
-load_from_outputs = True
+load_from_outputs = False
 
 # Add file paths dynamically
 def add_file(file_name, alias):

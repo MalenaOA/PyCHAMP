@@ -8,22 +8,23 @@ import datetime
 from py_champ.models.sd6_model_aquacrop import SD6ModelAquacrop
 from plot_validation import plot_validation
 from plot_results import plot_results
-# Define the working directory
 
+# Define the working directory
 def get_wd():
     return os.path.dirname(os.path.abspath(__file__))
 wd = get_wd()
-
+print(wd)
 
 # Malena PC ->
-#wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
+# wd = r"D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Heterogeneity"
 # Malena Laptop ->
-#wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
+# wd = r"C:\Users\m154o020\CHAMP\PyCHAMP\Summer2024\code_20240705\PyCHAMP\examples\Heterogeneity"
 # Michelle Laptop
-wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
+# wd = r"/Users/michellenguyen/Downloads/PyCHAMP/examples/Heterogeneity"
 # Michelle PC 
-#blah
-# Add the 'code' directory to sys.path if not already present
+# blah
+
+# Load previous results to make plots
 load_from_outputs = False
 
 # Add file paths dynamically
