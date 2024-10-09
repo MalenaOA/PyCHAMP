@@ -813,7 +813,7 @@ class Behavior(mesa.Agent):
         )
 
 
-class Behavior4SingleFieldAndWell_simCJ(mesa.Agent):
+class Behavior4SingleFieldAndWell(mesa.Agent):
     """ Simulate a farmer's behavior. """
 
     def __init__(
@@ -1490,7 +1490,7 @@ class Behavior4SingleFieldAndWell_simCJ(mesa.Agent):
         self.dm_sols = self.make_dm(
             state="Imitation", dm_sols=self.pre_dm_sols, neighbor=neighbor
         )
-        
+
 class Behavior4SingleFieldAndWell_ogCJ(mesa.Agent):
     """ Simulate a farmer's behavior. """
 
@@ -1508,7 +1508,7 @@ class Behavior4SingleFieldAndWell_ogCJ(mesa.Agent):
         **kwargs,
     ):
         """Initialize a Behavior agent in the Mesa model.
-        
+
         Parameters
         ----------
         unique_id : int
@@ -1516,8 +1516,8 @@ class Behavior4SingleFieldAndWell_ogCJ(mesa.Agent):
         model : object
             The Mesa model object.
         settings : dict
-            A dictionary containing settings related to the behavior agent. Expected 
-            keys include 'behavior_ids_in_network', 'field_ids', 'well_ids', 
+            A dictionary containing settings related to the behavior agent. Expected
+            keys include 'behavior_ids_in_network', 'field_ids', 'well_ids',
             'finance_id', 'decision_making', 'consumat', and 'water_rights'.
         pars : dict
             Parameters defining satisfaction and uncertainty thresholds for
@@ -1624,7 +1624,7 @@ class Behavior4SingleFieldAndWell_ogCJ(mesa.Agent):
         ----------
         settings : dict
             A dictionary containing settings related to the behavior agent. Expected
-            keys include 'behavior_ids_in_network', 'field_ids', 'well_ids', 
+            keys include 'behavior_ids_in_network', 'field_ids', 'well_ids',
             'finance_id', 'decision_making', 'consumat', and 'water_rights'.
         """
         self.behavior_ids_in_network = settings["behavior_ids_in_network"]
@@ -1647,7 +1647,7 @@ class Behavior4SingleFieldAndWell_ogCJ(mesa.Agent):
 
         Notes
         -----
-        This method calculates the perceived risks based on the truncated normal 
+        This method calculates the perceived risks based on the truncated normal
         distribution parameters for each crop. The calculated values are stored in the
         `percieved_risks` attribute.
         """
@@ -1923,10 +1923,10 @@ class Behavior4SingleFieldAndWell_ogCJ(mesa.Agent):
 
         Notes
         -----
-        This method sets up and solves an optimization model based on various inputs, 
-        including field data, well data, water rights, and financial considerations. The 
-        type of optimization and constraints applied depend on the agent's current 
-        state, as defined by the CONSUMAT theory. The method returns updated 
+        This method sets up and solves an optimization model based on various inputs,
+        including field data, well data, water rights, and financial considerations. The
+        type of optimization and constraints applied depend on the agent's current
+        state, as defined by the CONSUMAT theory. The method returns updated
         decision-making solutions that guide the agent's actions in subsequent steps.
         """
         aquifers = self.aquifers  # aquifer objects
@@ -3300,6 +3300,10 @@ class Behavior4Aquacrop(mesa.Agent):
                 # file_path="/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/data/corn_default.csv"
                 file_path = "C:\\Users\\m154o020\\CHAMP\\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\examples\\Aquacrop\\data\\corn_default.csv"
             )
+                # file_path="/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default_new.csv",
+                file_path="D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Aquacrop\corn_default.csv",
+                year=current_year
+                )
 
         ##### Simulate wells (energy consumption)
         well_ids = dm_sols["well_ids"]

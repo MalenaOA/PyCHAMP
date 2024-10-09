@@ -264,8 +264,8 @@ class SD6ModelAquacrop(mesa.Model):
             print(msg)
 
         # self.csv_path = "/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/data/corn_default.csv"
-
         self.csv_path = "C:\\Users\\m154o020\\CHAMP\\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\examples\\Aquacrop\\data\\corn_default.csv"
+        #self.csv_path = "D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Aquacrop\corn_default.csv"
 
     def step(self):
         """
@@ -320,8 +320,7 @@ class SD6ModelAquacrop(mesa.Model):
 
         # Simulation
         # Exercute step() of all behavioral agents in a for loop
-        # Note: fields, wells, and finance are simulation within a behavioral
-        # agent to better accomondate heterogeneity among behavioral agents
+        # Note: fields, wells, and finance are simulation within a behavioral agent to better accommodate heterogeneity among behavioral agents
         self.schedule.step(agt_type="Behavior")  # Parallelization makes it slower!
 
         ##### Nature Environment (aquifers)
@@ -560,7 +559,35 @@ class SD6ModelAquacrop(mesa.Model):
 
         # df_sys = df_sys.round(4)
 
-        return df_sys, df_agt
+        # =============================================================================
+        # df_aqua
+        # =============================================================================
+
+        # Extract the relevant columns from df_agt
+        df_aqua = df_agt[["bid", "irr_depth", "crop", "field_type", "yield"]].copy()
+
+        # Rename columns
+        df_aqua.rename(columns={"field_type": "irrig_method"}, inplace=True)
+        df_aqua.rename(columns={"irr_depth": "irr_depth_pychamp"}, inplace=True)
+        df_aqua.rename(columns={"yield": "yield_pychamp_bu"}, inplace=True)
+
+        df_aqua["irrig_method"] = df_aqua["irrig_method"].map({
+            "irrigated": 1,
+            "rainfed": 0,
+            })
+
+        # Create df_aqua_units based on df_aqua
+        df_aqua_units = df_aqua.copy()
+
+        # Rename the column
+        df_aqua_units.rename(columns={"irr_depth_pychamp": "maxirr_season"}, inplace=True)
+        #df_aqua.rename(columns={"yield": "yield_pychamp_ton"}, inplace=True)
+
+        # Convert from cm to mm (1 cm = 10 mm)
+        df_aqua_units["maxirr_season"] = df_aqua_units["maxirr_season"] * 10
+        #df_aqua_units["yield_pychamp_ton"] = df_aqua_units["yield_pychamp_ton"] / .0254
+
+        return df_sys, df_agt, df_aqua, df_aqua_units
     
 
     @staticmethod

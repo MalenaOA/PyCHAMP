@@ -685,6 +685,7 @@ class Field_aquacrop(mesa.Agent):
         # MESA required attributes => (unique_id, model)
         super().__init__(unique_id, model)
         self.agt_type = "Field"
+        self.farmer_id = unique_id
 
         # Initialize attributes
         self.load_settings(settings)
@@ -712,6 +713,7 @@ class Field_aquacrop(mesa.Agent):
         self.yield_rate_per_field = None    # Averaged value across a field
         self.irr_vol_per_field = None       # Averaged value across a field
         self.irr_depth = None
+        self.prec_aw = None
 
     def load_settings(self, settings: dict):
         """
@@ -764,41 +766,48 @@ class Field_aquacrop(mesa.Agent):
         self.crop = crop
         self.i_crop = i_crop
 
-    def update_csv(self, irr_depth_mm, crop_name, irrig_method, file_path):
-        
+    def update_csv(self, irr_depth_mm, crop_name, irrig_method, file_path, year, farmer_id, yield_value):
+        """
+        Update the CSV file with the given data.
+
+        Parameters
+        ----------
+        year : int
+            The current simulation year.
+        irr_depth_mm : float
+            The irrigation depth in millimeters.
+        crop_name : str
+            The name of the crop.
+        irrig_method : int
+            The irrigation method (1 for optimize, 0 for rainfed).
+        yield_value : float
+            The yield value from the water yield curve.
+        file_path : str
+            The path to the CSV file.
+        """
         max_irrseason = [irr_depth_mm]
         crop_name = [crop_name]
         irrig_method = [1 if irrig_method == "optimize" else 0]
+        yield_value = [yield_value]
+        farmer_id = [self.farmer_id]
+        year = [year]
 
-        print(max_irrseason, "done")
-        print(crop_name, "done")
-        print(irrig_method, "done")
+        new_data = pd.DataFrame({
+            'year': year,
+            'farmer_id': farmer_id,
+            'max_irrseason': max_irrseason,
+            'crop_name': crop_name,
+            'irrig_method': irrig_method,
+            'yield': yield_value
+        })
 
         if os.path.exists(file_path):
             df_existing = pd.read_csv(file_path)
-            new_data = pd.DataFrame({
-                'max_irrseason': max_irrseason,
-                'crop_name': crop_name,
-                'irrig_method': irrig_method
-            })
             df_updated = pd.concat([df_existing, new_data], ignore_index=True)
         else:
-            df_updated = pd.DataFrame({
-                'max_irrseason': max_irrseason,
-                'crop_name': crop_name,
-                'irrig_method': irrig_method
-            })
-        df_updated.to_csv(file_path, index=False)
-        print(f"Data saved to CSV: {file_path}")
+            df_updated = new_data
 
-    def run_aquacrop(self, file_path):
-        # Placeholder: replace with actual AquaCrop execution command
-        print(f"Running AquaCrop with CSV: {file_path}")
-        # Return dummy AquaCrop output for demonstration
-        return {
-            "bias_corrected_yield": 8.0,  # t/ha, for example
-            "bias_corrected_irrigation": 500.0  # mm, for example
-        }
+        df_updated.to_csv(file_path, index=False)
 
     def convert_units_to_aquacrop(self, irr_depth):
         #AQUACROP
@@ -815,8 +824,7 @@ class Field_aquacrop(mesa.Agent):
         # irrigation_m_ha = irrigation_cm * 0.1  # Example conversion, 1 mm ≈ 0.1 m/ha
         return y_bu, irr_depth_cm
 
-
-    def step(self, irr_depth, i_crop, prec_aw: dict, file_path: str) -> tuple:
+    def step(self, irr_depth, i_crop, prec_aw: dict, file_path=None, year=None, farmer_id=None) -> tuple:
         """
         Perform a single step of field operation, preparing data for coupling with Aquacrop
 
@@ -843,6 +851,7 @@ class Field_aquacrop(mesa.Agent):
         """
         self.t += 1
         self.irr_depth = irr_depth
+        self.prec_aw = prec_aw
 
         # Calculate yield
         a = self.a
@@ -886,38 +895,18 @@ class Field_aquacrop(mesa.Agent):
         crop_name = self.crop
         irrig_method = self.field_type
 
-        # Check the crop type and print or run AquaCrop accordingly
-        if self.crop == "corn":
-            print("Running AquaCrop")
-            # Here would be the logic or function call to run AquaCrop
-            # Convert irrigation depth to AquaCrop units
-            irr_depth_mm = self.convert_units_to_aquacrop(irr_depth)
+        # Convert irrigation depth to AquaCrop units
+        if self.crop == "corn": 
+            irr_depth_mm = irr_depth.flatten()[0]
+            irr_depth_mm = self.convert_units_to_aquacrop(irr_depth_mm)
+            yield_value = y.flatten()[0]
+        else: 
+            irr_depth_mm = irr_depth.flatten()[1]
+            irr_depth_mm = self.convert_units_to_aquacrop(irr_depth_mm)
+            yield_value = y.flatten()[1]
 
-            if len(irr_depth_mm.flatten()) > 1:
-                irr_depth_mm = irr_depth_mm.flatten()[0]
-            else:
-                irr_depth_mm = irr_depth_mm.flatten()[0]
-    
-            self.update_csv(irr_depth_mm, crop_name, irrig_method, file_path)
+        # Update the CSV file
+        #self.update_csv(irr_depth_mm, crop_name, irrig_method, file_path, year, farmer_id, yield_value)
 
-            aquacrop_output = self.run_aquacrop(file_path)
-
-            # Convert AquaCrop output to PyCHAMP units
-            bias_corrected_yield, bias_corrected_irrigation = self.convert_units_to_pychamp(
-                aquacrop_output["bias_corrected_yield"],
-                aquacrop_output["bias_corrected_irrigation"]
-            )
-        else:
-            print(f"Running normal operations for {self.crop}")
-            bias_corrected_yield = None
-            bias_corrected_irrigation = None
-
-
-
-        # from aqucrop we need bias corrected yield and irrgation, year, crop type. For double checking, irrgation, year and crop type
-        # irr_vol = bias corrected irrgation? if not we'll see
-        # crop type = crop?
-
-        
-
-        return y, avg_y_y, irr_vol, self.crop, bias_corrected_yield, bias_corrected_irrigation, irr_depth, prec_aw
+        return y, avg_y_y, irr_vol, self.crop, irr_depth, prec_aw 
+       
