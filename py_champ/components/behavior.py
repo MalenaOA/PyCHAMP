@@ -3298,10 +3298,9 @@ class Behavior4Aquacrop(mesa.Agent):
                 i_crop=i_crop,
                 prec_aw=prec_aw_step[field.prec_aw_id][current_year],
                 # file_path="/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/data/corn_default.csv"
-                file_path = "C:\\Users\\m154o020\\CHAMP\\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\examples\\Aquacrop\\data\\corn_default.csv"
-            )
-                # file_path="/Users/michellenguyen/Downloads/PyCHAMP/examples/Aquacrop/corn_default_new.csv",
-                file_path="D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Aquacrop\corn_default.csv",
+                # file_path = "C:\\Users\\m154o020\\CHAMP\\PyCHAMP\\Summer2024\\code_20240705\\PyCHAMP\\examples\\Aquacrop\\data\\corn_default.csv"
+                # file_path="D:\Malena\CHAMP\PyCHAMP\code_20240704\PyCHAMP\examples\Aquacrop\corn_default.csv",
+                file_path = r"C:\Users\m154o020\CHAMP\PyCHAMP\PyCHAMP_Malena\PyCHAMP_ChungYi\examples\Aquacrop\corn_default.csv",
                 year=current_year
                 )
 

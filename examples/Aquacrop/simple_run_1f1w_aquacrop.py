@@ -15,7 +15,7 @@ def get_wd():
 wd = get_wd()
 
 # Loading previous results for plotting
-load_from_outputs = False
+load_from_outputs = True
 
 # Add file paths dynamically
 def add_file(file_name, alias):
@@ -145,18 +145,18 @@ else:
 # =============================================================================
 # Plot results
 # =============================================================================
-# plot_validation(df_sys.reindex(data.index),
-#                 data,
-#                 metrices,
-#                 prec_avg,
-#                 crop_options,
-#                 background=True,
-#                 savefig=os.path.join(output_dir, f"Validation_{timestamp}.png"),
-#                 combined=True)
+plot_validation(df_sys.reindex(data.index),
+                data,
+                metrices,
+                prec_avg,
+                crop_options,
+                background=True,
+                savefig=os.path.join(output_dir, f"Validation_{timestamp}.png"),
+                combined=True)
 
-# plot_results(df_sys.reindex(data.index),
-#              prec_avg,
-#              crop_options,
-#              background=True,
-#              savefig=os.path.join(output_dir, f"Results_{timestamp}.png"),
-#              combined=True)
+plot_results(df_sys.reindex(data.index),
+             prec_avg,
+             crop_options,
+             background=True,
+             savefig=os.path.join(output_dir, f"Results_{timestamp}.png"),
+             combined=True)
