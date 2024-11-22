@@ -118,8 +118,8 @@ if not load_from_outputs:
     # Save df_sys and df_agt as CSV files
     df_sys.to_csv(os.path.join(output_dir, f"df_sys_{timestamp}.csv"), index=True)
     df_agt.to_csv(os.path.join(output_dir, f"df_agt_{timestamp}.csv"), index=True)
-    df_aqua.to_csv(os.path.join(output_dir, f"df_aqua_{timestamp}.csv"), index=True)
-    df_aqua_units.to_csv(os.path.join(output_dir, f"df_aqua_units_{timestamp}.csv"), index=True)
+    # df_aqua.to_csv(os.path.join(output_dir, f"df_aqua_{timestamp}.csv"), index=True)
+    # df_aqua_units.to_csv(os.path.join(output_dir, f"df_aqua_units_{timestamp}.csv"), index=True)
     metrices.to_csv(os.path.join(output_dir, f"metrices_{timestamp}.csv"), index=True)
 
 else:
@@ -127,11 +127,11 @@ else:
     output_dir = os.path.join(wd, "Outputs")
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    df_sys_filename = os.path.join(output_dir, "df_sys_20240818_222323.csv")
-    df_agt_filename = os.path.join(output_dir, "df_agt_20240818_222323.csv")
-    df_aqua_filename = os.path.join(output_dir, "df_aqua_20240818_222323.csv")
-    df_aqua_units_filename = os.path.join(output_dir, "df_aqua_units_20240818_222323.csv")
-    metrices_filename = os.path.join(output_dir, "metrices_20240818_222323.csv")
+    df_sys_filename = os.path.join(output_dir, "df_sys_20241105_0438.csv")
+    df_agt_filename = os.path.join(output_dir, "df_agt_20241105_0438.csv")
+    # df_aqua_filename = os.path.join(output_dir, "df_aqua_20240818_222323.csv")
+    # df_aqua_units_filename = os.path.join(output_dir, "df_aqua_units_20240818_222323.csv")
+    metrices_filename = os.path.join(output_dir, "metrices_20241105_0438.csv")
 
     df_sys = pd.read_csv(os.path.join(output_dir, df_sys_filename), index_col=0)
     df_agt = pd.read_csv(os.path.join(output_dir, df_agt_filename), index_col=0)
